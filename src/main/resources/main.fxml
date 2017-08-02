@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<AnchorPane id="AnchorPane" minHeight="400.0" minWidth="600.0" prefHeight="543.0" prefWidth="831.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="javafxapplication1.SampleController">
+<AnchorPane id="AnchorPane" minHeight="400.0" minWidth="600.0" prefHeight="543.0" prefWidth="831.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.scwot.collectables.controllers.MainController">
   <children>
     <VBox minHeight="600.0" minWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
@@ -21,7 +21,7 @@
           <menus>
             <Menu mnemonicParsing="false" text="File">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#handleOpenButtonAction" text="Open..." />
+                <MenuItem mnemonicParsing="false" text="Open..." />
                 <MenuItem mnemonicParsing="false" text="Close" />
               </items>
             </Menu>
@@ -39,8 +39,8 @@
         </MenuBar>
         <ToolBar>
           <items>
-            <Button fx:id="openButton" mnemonicParsing="false" onAction="#handleOpenButtonAction" text="Open..." />
-            <Button fx:id="cleanButton" mnemonicParsing="false" onAction="#handleCleanButtonAction" text="Clean" />
+            <Button fx:id="openButton" mnemonicParsing="false" text="Open..." />
+            <Button fx:id="cleanButton" mnemonicParsing="false" text="Clean" />
             <Button fx:id="testButton" mnemonicParsing="false" onAction="#handleTestButtonAction" text="Test" />
           </items>
         </ToolBar>
