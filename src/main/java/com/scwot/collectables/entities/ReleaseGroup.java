@@ -3,6 +3,7 @@ package com.scwot.collectables.entities;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,10 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.List;
 
+@Entity
 @Data
 @Builder
-@Entity
-public class Artist {
+public class ReleaseGroup {
 
     @Id
     @GeneratedValue
@@ -22,28 +23,15 @@ public class Artist {
     @Column(unique = true)
     private String mbid;
 
-    private Boolean isGroup;
-
     @Column(nullable = false)
     private String name;
 
-    private String from;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "releaseGroup")
+    private List<Release> releaseList;
 
-    private String to;
-
-    private String country;
+    private String type;
 
     @OneToMany
-    private List<Link> links;
-
-    private List<Artist> members;
-
-    private List<Artist> memberOf;
-
-    private List<Artist> related;
-
-    private List<String> aka;
-
-    private List<Genre> genres;
+    private List<Genre> genreList;
 
 }
