@@ -1,49 +1,71 @@
 package com.scwot.collectables.entities;
 
+import com.scwot.collectables.enums.Gender;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.List;
 
 @Data
 @Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Artist {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long artistId;
 
     @Column(unique = true)
     private String mbid;
 
-    private Boolean isGroup;
-
     @Column(nullable = false)
     private String name;
 
-    private String from;
+    @Column(nullable = false)
+    private String sortName;
 
-    private String to;
+    private Gender gender;
 
-    private String country;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "artist_releaseGroup",
+            joinColumns = @JoinColumn(name = "artistId"),
+            inverseJoinColumns = @JoinColumn(name = "releaseGroupId"))
+    private List<ReleaseGroup> releaseGroupList;
 
-    @OneToMany
-    private List<Link> links;
+    private Boolean isGroup;
 
+    private String beginDate;
+
+    private String endDate;
+
+    private String area;
+
+    @ManyToMany
+    @JoinTable(name = "artist_members",
+            joinColumns = @JoinColumn(name = "artistId"),
+            inverseJoinColumns = @JoinColumn(name = "memberId"))
     private List<Artist> members;
 
+    @ManyToMany
+    @JoinTable(name = "artist_members",
+            joinColumns = @JoinColumn(name = "memberId"),
+            inverseJoinColumns = @JoinColumn(name = "artistId"))
     private List<Artist> memberOf;
 
-    private List<Artist> related;
-
-    private List<String> aka;
-
-    private List<Genre> genres;
+    /*private List<Genre> genres;*/
 
 }

@@ -1,24 +1,33 @@
 package com.scwot.collectables.entities;
 
+import com.scwot.collectables.enums.ReleaseType;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import java.util.List;
 
-@Entity
 @Data
 @Builder
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReleaseGroup {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long releaseGroupId;
 
     @Column(unique = true)
     private String mbid;
@@ -29,9 +38,18 @@ public class ReleaseGroup {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "releaseGroup")
     private List<Release> releaseList;
 
-    private String type;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "artist_releaseGroup",
+            joinColumns = @JoinColumn(name = "releaseGroupId"),
+            inverseJoinColumns = @JoinColumn(name = "artistId"))
+    private List<Artist> artistList;
 
-    @OneToMany
+    private ReleaseType type;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "genre_releaseGroup",
+            joinColumns = @JoinColumn(name = "releaseGroupId"),
+            inverseJoinColumns = @JoinColumn(name = "genreId"))
     private List<Genre> genreList;
 
 }

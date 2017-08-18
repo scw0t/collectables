@@ -1,7 +1,9 @@
 package com.scwot.collectables.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,14 +15,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.List;
 
-@Entity
 @Data
 @Builder
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Release {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Long releaseId;
 
     @Column(unique = true)
     private String mbid;
@@ -29,7 +33,7 @@ public class Release {
     private String name;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "releaseGroupId")
     private ReleaseGroup releaseGroup;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -37,7 +41,7 @@ public class Release {
 
     private String barcode;
 
-    private Label label;
+    /*private Label label;*/
 
     private String catalogNumber;
 
