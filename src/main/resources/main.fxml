@@ -13,82 +13,59 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-<AnchorPane id="AnchorPane" minHeight="400.0" minWidth="600.0" prefHeight="543.0" prefWidth="831.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.scwot.collectables.controllers.MainController">
-  <children>
-    <VBox minHeight="600.0" minWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <children>
+<AnchorPane id="AnchorPane" minHeight="400.0" minWidth="600.0" prefHeight="543.0" prefWidth="831.0"
+            xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
+            fx:controller="com.scwot.collectables.controllers.MainController">
+    <VBox minHeight="600.0" minWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <MenuBar>
-          <menus>
             <Menu mnemonicParsing="false" text="File">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Open..." />
-                <MenuItem mnemonicParsing="false" text="Close" />
-              </items>
+                <MenuItem mnemonicParsing="false" text="Open..."/>
+                <MenuItem mnemonicParsing="false" text="Close"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Delete" />
-              </items>
+                <MenuItem mnemonicParsing="false" text="Delete"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
-              <items>
-                <MenuItem mnemonicParsing="false" text="About" />
-              </items>
+                <MenuItem mnemonicParsing="false" text="About"/>
             </Menu>
-          </menus>
         </MenuBar>
         <ToolBar>
-          <items>
-            <Button fx:id="openButton" mnemonicParsing="false" text="Open..." />
-            <Button fx:id="cleanButton" mnemonicParsing="false" text="Clean" />
-            <Button fx:id="testButton" mnemonicParsing="false" onAction="#handleTestButtonAction" text="Test" />
-          </items>
+            <Button fx:id="openButton" mnemonicParsing="false" text="Open..."/>
+            <Button fx:id="cleanButton" mnemonicParsing="false" text="Clean"/>
+            <Button fx:id="testButton" mnemonicParsing="false" onAction="#handleTestButtonAction" text="Test"/>
         </ToolBar>
-        <SplitPane id="SplitPane" fx:id="splitPane" dividerPositions="0.36550060313630883" maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" style="" VBox.vgrow="ALWAYS">
-          <items>
-            <VBox maxWidth="500.0" minWidth="300.0" prefHeight="-1.0" prefWidth="-1.0">
-              <children>
-                <TabPane fx:id="tPane1" prefHeight="422.0" prefWidth="214.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-                  <tabs>
+        <SplitPane id="SplitPane" fx:id="splitPane" dividerPositions="0.36550060313630883" VBox.vgrow="ALWAYS">
+            <VBox maxWidth="500.0" minWidth="300.0">
+                <TabPane fx:id="tPane1" prefHeight="422.0" prefWidth="214.0" tabClosingPolicy="UNAVAILABLE"
+                         VBox.vgrow="ALWAYS">
                     <Tab text="Коллекция">
-                      <content>
                         <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                          <children>
-                            <Pane fx:id="collectionAnchorPane" prefHeight="455.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                          </children>
+                            <Pane fx:id="collectionAnchorPane" prefHeight="455.0" prefWidth="300.0"
+                                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                  AnchorPane.topAnchor="0.0"/>
                         </AnchorPane>
-                      </content>
                     </Tab>
                     <Tab text="Исполнители">
-                      <content>
                         <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                          <children>
-                            <ListView fx:id="artistList" prefHeight="455.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                          </children>
+                            <ListView fx:id="artistList" prefHeight="455.0" prefWidth="300.0"
+                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                         </AnchorPane>
-                      </content>
                     </Tab>
                     <Tab text="Альбомы">
-                      <content>
                         <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                          <children>
-                            <ListView fx:id="albumsList" prefHeight="455.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                          </children>
+                            <ListView fx:id="albumsList" prefHeight="455.0" prefWidth="300.0"
+                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
                         </AnchorPane>
-                      </content>
                     </Tab>
-                  </tabs>
                 </TabPane>
-              </children>
             </VBox>
-            <HBox minWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
-              <children>
-                <TabPane id="tPane" fx:id="tabPane" minWidth="500.0" prefHeight="500.0" prefWidth="-1.0" style="" tabClosingPolicy="UNAVAILABLE" HBox.hgrow="SOMETIMES" />
-              </children>
+            <HBox>
+                <TabPane id="tPane" fx:id="tabPane" minWidth="500.0" prefHeight="500.0"
+                         tabClosingPolicy="UNAVAILABLE" HBox.hgrow="SOMETIMES"/>
             </HBox>
-          </items>
         </SplitPane>
-      </children>
     </VBox>
-  </children>
 </AnchorPane>

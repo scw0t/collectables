@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.List;
 
 @Data
@@ -36,16 +37,22 @@ public class Release {
     @JoinColumn(name = "releaseGroupId")
     private ReleaseGroup releaseGroup;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "release",
+            cascade = CascadeType.ALL)
     private List<Medium> mediumList;
 
-    private String barcode;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "labelId")
+    private Label label;
 
-    /*private Label label;*/
+    private String barcode;
 
     private String catalogNumber;
 
     private String yearRecorded;
+
     private String yearReleased;
+
+    private byte[] image;
 
 }

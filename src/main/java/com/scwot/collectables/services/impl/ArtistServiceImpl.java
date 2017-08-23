@@ -23,7 +23,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public void deleteByID(Long id) {
+    public void delete(Long id) {
         artistRepository.delete(verifyNotNull(id));
     }
 

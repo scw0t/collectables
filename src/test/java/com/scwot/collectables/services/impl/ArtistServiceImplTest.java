@@ -11,10 +11,14 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -34,6 +38,27 @@ public class ArtistServiceImplTest {
     @Test
     public void save() throws Exception {
         assertThat(artistService.save(defaultArtist()).getArtistId(), is(1L));
+    }
+
+    @Test
+    public void saveWithPhoto() throws Exception {
+        URL url = getClass().getResource("/default/default-photo.jpg");
+        File file = new File(url.getPath());
+        byte[] bFile = new byte[(int) file.length()];
+
+        assertThat(bFile, is(notNullValue()));
+
+        try (final FileInputStream fileInputStream = new FileInputStream(file)) {
+            fileInputStream.read(bFile);
+        }
+
+        Artist artist = defaultArtist();
+        artist.setImage(bFile);
+        artistService.save(artist);
+
+        artist = artistService.findById(1L);
+        assertThat(artist.getImage(), is(notNullValue()));
+        assertThat(artist.getImage().length, is(greaterThan(0)));
     }
 
     @Test
@@ -91,7 +116,7 @@ public class ArtistServiceImplTest {
 
         assertThat(artistService.findById(id).getArtistId(), is(id));
 
-        artistService.deleteByID(id);
+        artistService.delete(id);
 
         assertThat(artistService.findById(id), is(nullValue()));
     }

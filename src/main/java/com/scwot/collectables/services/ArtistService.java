@@ -8,7 +8,7 @@ public interface ArtistService {
 
     Artist save(final Artist artist);
 
-    void deleteByID(final Long id);
+    void delete(final Long id);
 
     List<Artist> findByName(final String name);
 

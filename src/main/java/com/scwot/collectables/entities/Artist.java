@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -65,6 +66,9 @@ public class Artist {
             joinColumns = @JoinColumn(name = "memberId"),
             inverseJoinColumns = @JoinColumn(name = "artistId"))
     private List<Artist> memberOf;
+
+    @Lob
+    private byte[] image;
 
     /*private List<Genre> genres;*/
 

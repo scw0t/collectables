@@ -22,8 +22,7 @@ public class Track {
 
     @Id
     @GeneratedValue
-    private Long id;
-
+    private Long trackId;
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Medium medium;

@@ -38,18 +38,20 @@ public class ReleaseGroup {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "releaseGroup")
     private List<Release> releaseList;
 
+    private ReleaseType type;
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "artist_releaseGroup",
             joinColumns = @JoinColumn(name = "releaseGroupId"),
             inverseJoinColumns = @JoinColumn(name = "artistId"))
     private List<Artist> artistList;
 
-    private ReleaseType type;
-
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "genre_releaseGroup",
             joinColumns = @JoinColumn(name = "releaseGroupId"),
             inverseJoinColumns = @JoinColumn(name = "genreId"))
     private List<Genre> genreList;
+
+    private Boolean VA;
 
 }
