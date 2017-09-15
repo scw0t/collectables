@@ -1,27 +1,19 @@
 package com.scwot.collectables.services.impl;
 
+import com.scwot.collectables.AbstractTest;
 import com.scwot.collectables.entities.Link;
 import com.scwot.collectables.enums.LinkResource;
 import com.scwot.collectables.enums.LinkType;
 import com.scwot.collectables.services.LinkService;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class LinkServiceImplTest {
-
+public class LinkServiceImplTest extends AbstractTest {
 
     @Autowired
     private LinkService linkService;

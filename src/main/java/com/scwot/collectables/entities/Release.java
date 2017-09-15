@@ -13,7 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import java.util.List;
 
 @Data
@@ -37,8 +36,7 @@ public class Release {
     @JoinColumn(name = "releaseGroupId")
     private ReleaseGroup releaseGroup;
 
-    @OneToMany(mappedBy = "release",
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "release", cascade = CascadeType.ALL)
     private List<Medium> mediumList;
 
     @ManyToOne(cascade = CascadeType.ALL)

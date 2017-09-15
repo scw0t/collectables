@@ -1,30 +1,24 @@
 package com.scwot.collectables.services.impl;
 
+import com.scwot.collectables.AbstractTest;
+import com.scwot.collectables.entities.Medium;
 import com.scwot.collectables.entities.Release;
 import com.scwot.collectables.entities.ReleaseGroup;
 import com.scwot.collectables.services.ReleaseGroupService;
 import com.scwot.collectables.services.ReleaseService;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class ReleaseServiceImplTest {
+public class ReleaseServiceImplTest extends AbstractTest {
 
     @Autowired
     private ReleaseService releaseService;
@@ -48,6 +42,45 @@ public class ReleaseServiceImplTest {
         releaseGroup = releaseGroupService.save(releaseGroup);
 
         assertThat(releaseGroup.getReleaseList().size(), is(1));
+    }
+
+    @Transactional
+    @Test
+    public void saveToReleaseGroupThenDelete() {
+        ReleaseGroup releaseGroup = releaseGroupService.save(defaultRG());
+        releaseGroup = releaseGroupService.findById(releaseGroup.getReleaseGroupId());
+
+        Release release = defaultRelease("release1");
+        release = releaseGroupService.saveRelease(releaseGroup.getReleaseGroupId(), release);
+
+        assertThat(releaseGroup.getReleaseList().size(), is(1));
+        assertEquals(release, releaseGroup.getReleaseList().get(0));
+
+        releaseGroupService.deleteRelease(releaseGroup.getReleaseGroupId(), release);
+        releaseGroup = releaseGroupService.findById(releaseGroup.getReleaseGroupId());
+
+        assertThat(releaseGroup.getReleaseList().size(), is(0));
+    }
+
+
+    @Transactional
+    @Test
+    public void getMediums() throws Exception {
+        ReleaseGroup releaseGroup = defaultRG();
+        Release release = defaultRelease("release");
+        final Medium medium = defaultMedium();
+        release.setMediumList(Lists.newArrayList(medium));
+        releaseGroup.setReleaseList(Lists.newArrayList(release));
+        releaseGroup = releaseGroupService.save(releaseGroup);
+
+        release = releaseService.find(releaseGroup.getReleaseList().get(0).getReleaseId());
+        assertThat(release.getMediumList().size(), is(1));
+    }
+
+    private Medium defaultMedium() {
+        return Medium.builder()
+                .name("medium")
+                .build();
     }
 
     private Release defaultRelease(final String name) {

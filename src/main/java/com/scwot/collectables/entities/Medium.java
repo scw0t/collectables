@@ -29,7 +29,7 @@ public class Medium {
 
     private String format;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "releaseId")
     private Release release;
 

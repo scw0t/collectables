@@ -1,6 +1,5 @@
 package com.scwot.collectables.services.impl;
 
-import com.google.common.base.Verify;
 import com.scwot.collectables.entities.Medium;
 import com.scwot.collectables.entities.Release;
 import com.scwot.collectables.repository.ReleaseRepository;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.google.common.base.Verify.*;
+import static com.google.common.base.Verify.verifyNotNull;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -31,11 +30,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 
     @Override
     public void delete(final Long releaseId) {
-
+        releaseRepository.delete(releaseId);
     }
 
-    @Override
-    public List<Medium> getMediums(final Long releaseId) {
-        return null;
-    }
 }

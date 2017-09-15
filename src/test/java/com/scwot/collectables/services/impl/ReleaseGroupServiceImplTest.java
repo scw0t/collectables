@@ -1,29 +1,22 @@
 package com.scwot.collectables.services.impl;
 
 import com.google.common.collect.Lists;
+import com.scwot.collectables.AbstractTest;
 import com.scwot.collectables.entities.Artist;
 import com.scwot.collectables.entities.ReleaseGroup;
 import com.scwot.collectables.enums.ReleaseType;
 import com.scwot.collectables.services.ArtistService;
 import com.scwot.collectables.services.ReleaseGroupService;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
 
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class ReleaseGroupServiceImplTest {
+public class ReleaseGroupServiceImplTest extends AbstractTest{
 
     @Autowired
     private ReleaseGroupService releaseGroupService;
@@ -70,7 +63,6 @@ public class ReleaseGroupServiceImplTest {
                 .name("Test release group")
                 .mbid("rg123")
                 .type(ReleaseType.ALBUM)
-
                 .build();
     }
 

@@ -2,12 +2,14 @@ package com.scwot.collectables.services.impl;
 
 import com.google.common.base.VerifyException;
 import com.google.common.collect.Lists;
+import com.scwot.collectables.AbstractTest;
 import com.scwot.collectables.entities.Artist;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
@@ -24,10 +26,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class ArtistServiceImplTest {
+public class ArtistServiceImplTest extends AbstractTest {
 
     private static final String ARTIST_NAME = "artist";
     private static final String ARTIST_MBID = "123";
