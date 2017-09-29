@@ -1,6 +1,7 @@
 package com.scwot.collectables.ui.components;
 
 import com.scwot.collectables.entities.Artist;
+import com.scwot.collectables.utils.ImageUtils;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -9,6 +10,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.ByteArrayInputStream;
+
+import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
 
 public class ArtistItem extends HBox {
 
@@ -35,7 +38,11 @@ public class ArtistItem extends HBox {
         return innerVBox;
     }
 
-    private ImageView initImageView(final byte[] imageBytes) {
+    private ImageView initImageView(byte[] imageBytes) {
+        if (imageBytes == null) {
+            imageBytes = ImageUtils.readImage(DEFAULT_PHOTO_PATH);
+        }
+
         final Image image = new Image(new ByteArrayInputStream(imageBytes),
                 DEFAULT_WIDTH, 0, true, true);
         return new ImageView(image);

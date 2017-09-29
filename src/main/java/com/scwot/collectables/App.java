@@ -12,10 +12,7 @@ import org.springframework.context.annotation.Lazy;
 @SpringBootApplication
 public class App extends AbstractJavaFxApplicationSupport {
 
-    /**
-     * Note that this is configured in application.properties
-     */
-    @Value("${app.ui.title:Example App}")//
+    @Value("${app.ui.title:Example App}")
     private String windowTitle;
 
     @Autowired

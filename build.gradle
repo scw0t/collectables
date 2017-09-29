@@ -11,6 +11,13 @@ configurations {
     testCompile.extendsFrom compileOnly
 }
 
+allprojects {
+    repositories {
+        jcenter()
+        maven { url "https://dl.bintray.com/ijabz/maven" }
+    }
+}
+
 buildscript {
     repositories {
         mavenCentral()
@@ -27,7 +34,11 @@ repositories {
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile group: 'com.google.guava', name: 'guava', version: '23.0'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+    compile group: 'org.apache.commons', name: 'commons-text', version: '1.1'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+    compile 'net.jthink:jaudiotagger:2.2.3'
     runtime ('com.h2database:h2:+')
 
     compileOnly('org.projectlombok:lombok:+')

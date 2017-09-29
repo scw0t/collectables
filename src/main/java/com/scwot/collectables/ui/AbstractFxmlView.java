@@ -152,7 +152,7 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
     }
 
     /**
-     * Does not initialize the view. Only registers the Consumer and waits until the the view is going to be created / the
+     * Does not readFromFiles the view. Only registers the Consumer and waits until the the view is going to be created / the
      * method FXMLView#getView or FXMLView#getViewAsync invoked.
      *
      * @param presenterConsumer listener for the presenter construction

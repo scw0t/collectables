@@ -3,14 +3,15 @@ package com.scwot.collectables.controllers;
 import com.scwot.collectables.entities.Artist;
 import com.scwot.collectables.services.ArtistService;
 import com.scwot.collectables.ui.components.ArtistItem;
+import com.scwot.collectables.utils.ImageUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import utils.ImageUtils;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
+
+import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
 
 @Component
 public class MainController {
@@ -41,7 +42,7 @@ public class MainController {
         return Artist.builder()
                 .name("The Artist")
                 .sortName("Artist, The")
-                .image(ImageUtils.readImage("/default/default-photo.jpg"))
+                .image(ImageUtils.readImage(DEFAULT_PHOTO_PATH))
                 .beginDate("1980")
                 .endDate("1985")
                 .isGroup(true)
