@@ -69,25 +69,10 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir,
                                                          BasicFileAttributes attrs) {
-                    int trackCount = 0;
-                    File[] list = dir.toFile().listFiles();
-                    FileSystemWrapper currentEntry = new FileSystemWrapper(dir.toFile());
+                    final FileSystemWrapper currentEntry = new FileSystemWrapper(dir.toFile());
 
                     System.out.println("-----> Curr dir: " + dir.toFile().toString());
-                    for (File file : list) {
-                        if (!file.isDirectory()) {
-                            if (DirHelper.isAudioFile(file)) {
-                                Mp3FileWrapper audio = new Mp3FileWrapper();
-                                audio.read(file);
-                                audio.setTrackCount(++trackCount);
-                                currentEntry.addAudio(audio);
-                            } else if (DirHelper.isImageFile(file)) {
-                                currentEntry.addImage(file);
-                            } else {
-                                currentEntry.addOther(file);
-                            }
-                        }
-                    }
+                    read(dir, currentEntry);
 
                     if (entryCount == 0) {
                         root = currentEntry;
@@ -109,12 +94,34 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error occurred while walking the directory: "
+                    + parent.getAbsolutePath() + "\n" + e.getMessage(), e);
+        }
+    }
+
+    private void read(Path dir, FileSystemWrapper currentEntry) {
+        final File[] list = dir.toFile().listFiles();
+        int trackCount = 0;
+        if (list != null) {
+            for (File file : list) {
+                if (!file.isDirectory()) {
+                    if (DirHelper.isAudioFile(file)) {
+                        final Mp3FileWrapper audio = new Mp3FileWrapper();
+                        audio.read(file);
+                        audio.setTrackCount(++trackCount);
+                        currentEntry.addAudio(audio);
+                    } else if (DirHelper.isImageFile(file)) {
+                        currentEntry.addImage(file);
+                    } else {
+                        currentEntry.addOther(file);
+                    }
+                }
+            }
         }
     }
 
     private void addMedium(FileSystemWrapper properties) {
-        ReleaseMetadata releaseMetadata = new ReleaseMetadata();
+        final ReleaseMetadata releaseMetadata = new ReleaseMetadata();
         releaseMetadata.readFromFiles(properties);
         if (releaseMetadata.getDiscNumber() == 0)
             releaseMetadata.setDiscNumber(discNumber(properties));

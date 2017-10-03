@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 public class DirHelper {
 
+    public final static String MACOSX_FOLDER_NAME = "__MACOSX";
+
     private int audioCount;
     private int imagesCount;
     private int othersCount;
@@ -94,15 +96,14 @@ public class DirHelper {
         }
     }
 
-    /*
-        If current folder has subfolders
-     */
-    public boolean hasInnerFolder(File dir) {
-        final List<File> folderList = (List<File>) FileUtils.listFilesAndDirs(dir,
+    public static List<File> listFilesAndDirs(File dir) {
+        return (List<File>) FileUtils.listFilesAndDirs(dir,
                 new NotFileFilter(TrueFileFilter.INSTANCE),
                 DirectoryFileFilter.DIRECTORY);
-        //System.out.println("Inner folders count: " + folderList.size());
-        return folderList.size() > 1;
+    }
+
+    public static boolean hasInnerFolder(File dir) {
+        return listFilesAndDirs(dir).size() > 1;
     }
 
     public boolean doesNotContainRelease(File dir) {
@@ -121,81 +122,39 @@ public class DirHelper {
         return isExpectedTypeValue(file, ImageTypes.values());
     }
 
-    /*public static boolean isMP3(File file) {
-        boolean value = false;
-        try {
-            String mimeType = Files.probeContentType(file.toPath());
-            for (AudioTypes audioTypes : AudioTypes.values()) {
-                if (audioTypes.toString().equals(mimeType)) {
-                    value = true;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return value;
-    }*/
-
     private static boolean isExpectedTypeValue(File file, Type[] types) {
         try {
             final String mimeType = Files.probeContentType(file.toPath());
             return Arrays.stream(types).anyMatch(type -> type.toString().equals(mimeType));
-            /*for (Type imageType : types) {
-                if (imageType.toString().equals(mimeType)) {
-                    value = true;
-                }
-            }*/
         } catch (IOException e) {
             throw new RuntimeException("error while processing type values for: " + Arrays.asList(types) + "\n" + e.getMessage(), e);
         }
     }
 
-    /*
-        if folder contains some audio
-     */
     public boolean hasAudio() {
         return audioCount > 0;
     }
 
-    /*
-        if folder contains images
-     */
     public boolean hasImages() {
         return imagesCount > 0;
     }
 
-    /*
-        if folder contain other file types
-    */
     public boolean hasOthers() {
         return othersCount > 0;
     }
 
-    /*
-        count of audio files in folder
-    */
     public int getAudioCount() {
         return audioCount;
     }
 
-    /*
-        count of images in folder
-    */
     public int getImagesCount() {
         return imagesCount;
     }
 
-    /*
-        count of other file types in folder
-    */
     public int getOthersCount() {
         return othersCount;
     }
 
-    /*
-        represents audio Mime types
-    */
     private enum AudioTypes implements Type {
         MP3 {
             public String toString() {
@@ -204,9 +163,6 @@ public class DirHelper {
         }
     }
 
-    /*
-        represents image Mime types
-    */
     private enum ImageTypes implements Type {
         JPG {
             public String toString() {
@@ -227,9 +183,6 @@ public class DirHelper {
         }
     }
 
-    /*
-        represents other Mime types - maybe for future purposes
-    */
     private enum OtherTypes implements Type {
         TXT {
             public String toString() {

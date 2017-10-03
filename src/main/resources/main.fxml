@@ -16,7 +16,7 @@
 <AnchorPane id="AnchorPane" minHeight="400.0" minWidth="600.0" prefHeight="543.0" prefWidth="831.0"
             xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
             fx:controller="com.scwot.collectables.controllers.MainController">
-    <VBox minHeight="600.0" minWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+    <VBox fx:id="mainBox" minHeight="600.0" minWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <MenuBar>
             <Menu mnemonicParsing="false" text="File">

@@ -102,7 +102,7 @@ public class Mp3FileWrapper {
         if (!EMPTY_STRING.equals(discNumberTag)) {
             discNumberTag = discNumberTag
                     .replaceFirst("^0", EMPTY_STRING)
-                    .replaceAll("\\/.+", EMPTY_STRING)
+                    .replaceAll("/.+", EMPTY_STRING)
                     .replaceAll("\\D", EMPTY_STRING);
             if (!EMPTY_STRING.equals(discNumberTag)) {
                 value = Integer.valueOf(discNumberTag);
