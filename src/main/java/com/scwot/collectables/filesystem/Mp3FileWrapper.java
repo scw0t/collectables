@@ -1,6 +1,13 @@
 package com.scwot.collectables.filesystem;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import lombok.Data;
+
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotWriteException;
 import org.jaudiotagger.audio.mp3.MP3File;
@@ -8,12 +15,6 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
 import org.springframework.util.StringUtils;
-
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Data
 public class Mp3FileWrapper {
@@ -41,7 +42,7 @@ public class Mp3FileWrapper {
     private Boolean hasArtwork;
     private String trackNumber;
     private Integer discNumber;
-    private String MBReleaseID;
+    private String mbReleaseId;
     private int trackCount;
 
     public void read(File file) {
@@ -51,7 +52,7 @@ public class Mp3FileWrapper {
 
             artistTitle = fromTag(audioFile, FieldKey.ARTIST, UNKNOWN_VALUE);
             albumTitle = fromTag(audioFile, FieldKey.ALBUM, UNKNOWN_VALUE);
-            MBReleaseID = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASEID, EMPTY_STRING);
+            mbReleaseId = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASEID, EMPTY_STRING);
             label = fromTag(audioFile, FieldKey.RECORD_LABEL, EMPTY_STRING);
             trackTitle = fromTag(audioFile, FieldKey.TITLE, UNKNOWN_VALUE);
             trackNumber = fromTag(audioFile, FieldKey.TRACK, String.valueOf(trackCount));
@@ -71,8 +72,8 @@ public class Mp3FileWrapper {
         try {
             return fromTag(audioFile, fieldKey, defaultValue);
         } catch (StringIndexOutOfBoundsException ex) {
-            throw new RuntimeException("Error while parsing bounded value from tag: " +
-                    audioFile.getFile().getAbsolutePath() + "\n" + ex.getMessage(), ex);
+            throw new RuntimeException("Error while parsing bounded value from tag: "
+                    + audioFile.getFile().getAbsolutePath() + "\n" + ex.getMessage(), ex);
         }
     }
 
@@ -80,7 +81,7 @@ public class Mp3FileWrapper {
         final String value = boundedFromTag(audioFile, fieldKey, defaultValue);
         final String origYear = fromCustomTag(audioFile, ORIGINALYEAR_TAG_NAME, defaultValue);
 
-        if (!value.isEmpty() && (Integer.valueOf(value) > Integer.valueOf(origYear))) {
+        if (!value.isEmpty() && (Integer.parseInt(value) > Integer.parseInt(origYear))) {
             return origYear;
         }
 
@@ -105,7 +106,7 @@ public class Mp3FileWrapper {
                     .replaceAll("/.+", EMPTY_STRING)
                     .replaceAll("\\D", EMPTY_STRING);
             if (!EMPTY_STRING.equals(discNumberTag)) {
-                value = Integer.valueOf(discNumberTag);
+                value = Integer.parseInt(discNumberTag);
             }
         }
         return value;
@@ -147,8 +148,9 @@ public class Mp3FileWrapper {
 
         if (!trackTag.isEmpty()) {
             Matcher matcher = TRACK_PATTERN.matcher(trackTag);
-            if (matcher.find())
-                value = Integer.valueOf(matcher.group(0));
+            if (matcher.find()) {
+                value = Integer.parseInt(matcher.group(0));
+            }
         }
 
         return value;
@@ -173,8 +175,8 @@ public class Mp3FileWrapper {
             try {
                 audioFile.commit();
             } catch (CannotWriteException ex) {
-                throw new RuntimeException("Error while processing null-tag audio file: " +
-                        audioFile.getFile().getAbsolutePath() + "\n" + ex.getMessage(), ex);
+                throw new RuntimeException("Error while processing null-tag audio file: "
+                        + audioFile.getFile().getAbsolutePath() + "\n" + ex.getMessage(), ex);
             }
         }
     }

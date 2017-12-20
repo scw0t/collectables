@@ -1,21 +1,23 @@
 package com.scwot.collectables.utils;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.NotFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 public class DirHelper {
 
-    public final static String MACOSX_FOLDER_NAME = "__MACOSX";
+    public static final String MACOSX_FOLDER_NAME = "__MACOSX";
 
     private int audioCount;
     private int imagesCount;
@@ -52,7 +54,7 @@ public class DirHelper {
     /*
        Count subfolders which represents separate CDs (CD1, CD2, etc.)
     */
-    public static int getCDFoldersCount(File dir) {
+    public static int getCdFoldersCount(File dir) {
         int count = 0;
 
         final File[] directories = dir.listFiles((current, name) -> new File(current, name).isDirectory());
@@ -68,7 +70,7 @@ public class DirHelper {
                     .count();
         }
 
-        int correction = directories.length - count + 1;
+        final int correction = directories.length - count + 1;
         if (correction > count) {
             count = 0;
         }
@@ -79,20 +81,29 @@ public class DirHelper {
        deletes unnecessary junk folders
     */
     public static void deleteDirectory(final File dir) {
-        // check if folder file is a real folder
-        if (dir.isDirectory()) {
-            File[] list = dir.listFiles();
-            if (list != null) {
-                for (File currentDir : list) {
-                    if (currentDir.isDirectory()) {
-                        deleteDirectory(currentDir);
-                    }
-                    currentDir.delete();
+        if (!dir.isDirectory()) {
+            return;
+        }
+
+        Optional.ofNullable(dir.listFiles())
+                .map(Arrays::stream)
+                .orElseGet(Stream::empty)
+                .filter(File::isDirectory)
+                .forEach(DirHelper::deleteDirectory);
+        //.collect(Collectors.toList());
+
+        /*File[] list = dir.listFiles();
+        if (list != null) {
+
+            for (File currentDir : list) {
+                if (currentDir.isDirectory()) {
+                    deleteDirectory(currentDir);
                 }
+                currentDir.delete();
             }
-            if (!dir.delete()) {
-                System.out.println("can't delete folder : " + dir);
-            }
+        }*/
+        if (!dir.delete()) {
+            System.out.println("can't delete folder : " + dir);
         }
     }
 
@@ -107,11 +118,11 @@ public class DirHelper {
     }
 
     public boolean doesNotContainRelease(File dir) {
-        return !hasAudio() && DirHelper.getCDFoldersCount(dir) == 0 && !hasInnerFolder(dir);
+        return !hasAudio() && DirHelper.getCdFoldersCount(dir) == 0 && !hasInnerFolder(dir);
     }
 
     public boolean containsJustInnerFolders(File dir) {
-        return !hasAudio() && DirHelper.getCDFoldersCount(dir) == 0 && hasInnerFolder(dir);
+        return !hasAudio() && DirHelper.getCdFoldersCount(dir) == 0 && hasInnerFolder(dir);
     }
 
     public static boolean isAudioFile(File file) {
@@ -127,7 +138,8 @@ public class DirHelper {
             final String mimeType = Files.probeContentType(file.toPath());
             return Arrays.stream(types).anyMatch(type -> type.toString().equals(mimeType));
         } catch (IOException e) {
-            throw new RuntimeException("error while processing type values for: " + Arrays.asList(types) + "\n" + e.getMessage(), e);
+            throw new RuntimeException("error while processing type values for: "
+                    + Arrays.asList(types) + "\n" + e.getMessage(), e);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.scwot.collectables.controllers;
 
+import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
+
 import com.google.common.collect.Lists;
 import com.scwot.collectables.entities.Artist;
 import com.scwot.collectables.services.ArtistService;
@@ -7,19 +9,18 @@ import com.scwot.collectables.tasks.ScanDirTask;
 import com.scwot.collectables.ui.components.ArtistItem;
 import com.scwot.collectables.utils.DirHelper;
 import com.scwot.collectables.utils.ImageUtils;
+
+import java.io.File;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.util.List;
-
-import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
 
 @Component
 public class MainController {

@@ -1,22 +1,23 @@
 package com.scwot.collectables.services.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import com.scwot.collectables.AbstractTest;
 import com.scwot.collectables.entities.Medium;
 import com.scwot.collectables.entities.Release;
 import com.scwot.collectables.entities.ReleaseGroup;
 import com.scwot.collectables.services.ReleaseGroupService;
 import com.scwot.collectables.services.ReleaseService;
-import org.assertj.core.util.Lists;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.assertj.core.util.Lists;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ReleaseServiceImplTest extends AbstractTest {
 
@@ -29,8 +30,6 @@ public class ReleaseServiceImplTest extends AbstractTest {
     @Test
     @Transactional
     public void saveAndFind() throws Exception {
-        ReleaseGroup releaseGroup = releaseGroupService.save(defaultRG());
-
         final Release release = releaseService.save(defaultRelease("release1"));
         assertThat(release, is(notNullValue()));
         assertThat(release.getReleaseId(), is(1L));
@@ -38,6 +37,7 @@ public class ReleaseServiceImplTest extends AbstractTest {
         final Release found = releaseService.find(release.getReleaseId());
         assertThat(release.getName(), is(equalTo(found.getName())));
 
+        ReleaseGroup releaseGroup = releaseGroupService.save(defaultRg());
         releaseGroup.setReleaseList(Lists.newArrayList(release));
         releaseGroup = releaseGroupService.save(releaseGroup);
 
@@ -47,7 +47,7 @@ public class ReleaseServiceImplTest extends AbstractTest {
     @Transactional
     @Test
     public void saveToReleaseGroupThenDelete() {
-        ReleaseGroup releaseGroup = releaseGroupService.save(defaultRG());
+        ReleaseGroup releaseGroup = releaseGroupService.save(defaultRg());
         releaseGroup = releaseGroupService.findById(releaseGroup.getReleaseGroupId());
 
         Release release = defaultRelease("release1");
@@ -66,7 +66,7 @@ public class ReleaseServiceImplTest extends AbstractTest {
     @Transactional
     @Test
     public void getMediums() throws Exception {
-        ReleaseGroup releaseGroup = defaultRG();
+        ReleaseGroup releaseGroup = defaultRg();
         Release release = defaultRelease("release");
         final Medium medium = defaultMedium();
         release.setMediumList(Lists.newArrayList(medium));
@@ -89,7 +89,7 @@ public class ReleaseServiceImplTest extends AbstractTest {
                 .build();
     }
 
-    private ReleaseGroup defaultRG() {
+    private ReleaseGroup defaultRg() {
         return ReleaseGroup.builder()
                 .name("releaseGroup1")
                 .build();

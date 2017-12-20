@@ -1,5 +1,9 @@
 package com.scwot.collectables.services.impl;
 
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import com.google.common.collect.Lists;
 import com.scwot.collectables.AbstractTest;
 import com.scwot.collectables.entities.Artist;
@@ -7,16 +11,13 @@ import com.scwot.collectables.entities.ReleaseGroup;
 import com.scwot.collectables.enums.ReleaseType;
 import com.scwot.collectables.services.ArtistService;
 import com.scwot.collectables.services.ReleaseGroupService;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
 
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class ReleaseGroupServiceImplTest extends AbstractTest{
+public class ReleaseGroupServiceImplTest extends AbstractTest {
 
     @Autowired
     private ReleaseGroupService releaseGroupService;
@@ -101,12 +102,12 @@ public class ReleaseGroupServiceImplTest extends AbstractTest{
 
     @Test
     public void delete() throws Exception {
-        final ReleaseGroup savedRG = releaseGroupService.save(defaultReleaseGroup());
-        assertThat(savedRG.getReleaseGroupId(), is(1L));
+        final ReleaseGroup savedRg = releaseGroupService.save(defaultReleaseGroup());
+        assertThat(savedRg.getReleaseGroupId(), is(1L));
 
-        releaseGroupService.delete(savedRG.getReleaseGroupId());
+        releaseGroupService.delete(savedRg.getReleaseGroupId());
 
-        assertThat(releaseGroupService.findById(savedRG.getReleaseGroupId()), is(nullValue()));
+        assertThat(releaseGroupService.findById(savedRg.getReleaseGroupId()), is(nullValue()));
     }
 
 }

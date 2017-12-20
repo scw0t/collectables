@@ -14,7 +14,7 @@ public interface ArtistService {
 
     Artist findById(final Long id);
 
-    Artist findByMBID(final String mbid);
+    Artist findByMbId(final String mbid);
 
     List<Artist> getAll();
 

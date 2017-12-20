@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.scwot.collectables.ui;
 
+import static java.util.ResourceBundle.getBundle;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -24,18 +33,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-
-import static java.util.ResourceBundle.getBundle;
 
 public abstract class AbstractFxmlView implements ApplicationContextAware {
 
@@ -95,12 +96,13 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
         ensureFxmlLoaderInitialized();
 
         final Parent parent = fxmlLoader.getRoot();
-        addCSSIfAvailable(parent);
+        addCssIfAvailable(parent);
         return parent;
     }
 
     /**
-     * Initializes the view synchronously and invokes the consumer with the created parent Node within the FX UI thread.
+     * Initializes the view synchronously and invokes the consumer
+     * with the created parent Node within the FX UI thread.
      *
      * @param consumer - an object interested in received the {@link Parent} as callback
      */
@@ -109,7 +111,8 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
     }
 
     /**
-     * Scene Builder creates for each FXML document a root container. This method omits the root container (e.g.
+     * Scene Builder creates for each FXML document a root container.
+     * This method omits the root container (e.g.
      * {@link AnchorPane}) and gives you the access to its first child.
      *
      * @return the first child of the {@link AnchorPane}
@@ -124,7 +127,7 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
         return children.listIterator().next();
     }
 
-    private void addCSSIfAvailable(Parent parent) {
+    private void addCssIfAvailable(Parent parent) {
         URL uri = getClass().getResource(getStyleSheetName());
         if (uri == null) {
             return;
@@ -139,10 +142,13 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
     }
 
     /**
-     * In case the view was not initialized yet, the conventional fxml (airhacks.fxml for the AirhacksView and
-     * AirhacksPresenter) are loaded and the specified presenter / controller is going to be constructed and returned.
+     * In case the view was not initialized yet, the conventional fxml
+     * (airhacks.fxml for the AirhacksView and
+     * AirhacksPresenter) are loaded and the specified presenter / controller is going
+     * to be constructed and returned.
      *
-     * @return the corresponding controller / presenter (usually for a AirhacksView the AirhacksPresenter)
+     * @return the corresponding controller / presenter
+     * (usually for a AirhacksView the AirhacksPresenter)
      */
     public Object getPresenter() {
 
@@ -152,16 +158,17 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
     }
 
     /**
-     * Does not readFromFiles the view. Only registers the Consumer and waits until the the view is going to be created / the
+     * Does not readFromFiles the view. Only registers the Consumer and waits
+     * until the the view is going to be created / the
      * method FXMLView#getView or FXMLView#getViewAsync invoked.
      *
      * @param presenterConsumer listener for the presenter construction
      */
     public void getPresenter(Consumer<Object> presenterConsumer) {
 
-        this.presenterProperty.addListener((ObservableValue<? extends Object> o, Object oldValue, Object newValue) -> {
-            presenterConsumer.accept(newValue);
-        });
+        this.presenterProperty.addListener(
+                (ObservableValue<?> o, Object oldValue, Object newValue) -> presenterConsumer.accept(newValue)
+        );
     }
 
     /**
@@ -173,8 +180,8 @@ public abstract class AbstractFxmlView implements ApplicationContextAware {
     }
 
     /**
-     * @return the name of the view without the "View" prefix in lowerCase. For AirhacksView just airhacks is going to be
-     * returned.
+     * @return the name of the view without the "View" prefix in lowerCase.
+     * For AirhacksView just airhacks is going to be returned.
      */
     protected String getConventionalName() {
         return stripEnding(getClass().getSimpleName().toLowerCase());

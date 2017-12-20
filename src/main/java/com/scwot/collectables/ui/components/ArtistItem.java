@@ -1,17 +1,17 @@
 package com.scwot.collectables.ui.components;
 
+import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
+
 import com.scwot.collectables.entities.Artist;
 import com.scwot.collectables.utils.ImageUtils;
+
+import java.io.ByteArrayInputStream;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
-import java.io.ByteArrayInputStream;
-
-import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
 
 public class ArtistItem extends HBox {
 

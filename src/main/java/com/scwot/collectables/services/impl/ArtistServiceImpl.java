@@ -1,15 +1,17 @@
 package com.scwot.collectables.services.impl;
 
+import static com.google.common.base.Verify.verifyNotNull;
+
 import com.scwot.collectables.entities.Artist;
 import com.scwot.collectables.repository.ArtistRepository;
 import com.scwot.collectables.services.ArtistService;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.google.common.base.Verify.verifyNotNull;
+import lombok.AllArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
@@ -38,7 +40,7 @@ public class ArtistServiceImpl implements ArtistService {
     }
 
     @Override
-    public Artist findByMBID(String mbid) {
+    public Artist findByMbId(String mbid) {
         return artistRepository.findByMbid(verifyNotNull(mbid));
     }
 

@@ -29,7 +29,7 @@ public class ReleaseMetadata {
     private String catNum;
     private String genres;
     private Map<String, String> yearAlbum = Maps.newHashMap();
-    private String MBReleaseID;
+    private String mbReleaseId;
 
     public void readFromFiles(FileSystemWrapper properties) {
         audioList = properties.getListOfAudios();
@@ -51,7 +51,7 @@ public class ReleaseMetadata {
                     }
                 }).forEach((audio) -> yearAlbum.put(audio.getAlbumTitle(), audio.getYear()));
 
-        MBReleaseID = audioList.get(0).getMBReleaseID();
+        mbReleaseId = audioList.get(0).getMbReleaseId();
         label = audioList.get(0).getLabel();
         catNum = audioList.get(0).getCatNum();
 

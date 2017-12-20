@@ -5,7 +5,6 @@ import com.scwot.collectables.filesystem.FileSystemWrapper;
 import com.scwot.collectables.filesystem.Mp3FileWrapper;
 import com.scwot.collectables.filesystem.ReleaseMetadata;
 import com.scwot.collectables.utils.DirHelper;
-import lombok.Data;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +15,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
+import lombok.Data;
+
 @Data
 public class DefaultImportStrategy/* implements InputStrategy*/ {
 
@@ -25,7 +26,7 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
     private String album;
     private String year;
     private String origYear;
-    private String MBReleaseID;
+    private String mbReleaseId;
     private List<ReleaseMetadata> releaseMetadataList = Lists.newArrayList();
     private String label;
     private String catNumber;
@@ -55,7 +56,7 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
             album = releaseMetadataList.get(0).getAlbum();
             year = releaseMetadataList.get(0).getReleasedYear();
             origYear = releaseMetadataList.get(0).getRecordedYear();
-            MBReleaseID = releaseMetadataList.get(0).getMBReleaseID();
+            mbReleaseId = releaseMetadataList.get(0).getMbReleaseId();
             label = releaseMetadataList.get(0).getLabel();
             catNumber = releaseMetadataList.get(0).getCatNum();
         }
@@ -76,11 +77,12 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
 
                     if (entryCount == 0) {
                         root = currentEntry;
-                        cdCount = DirHelper.getCDFoldersCount(dir.toFile());
+                        cdCount = DirHelper.getCdFoldersCount(dir.toFile());
                     } else {
                         root.addChild(currentEntry);
-                        if (cdNotProcessed == 0)
+                        if (cdNotProcessed == 0) {
                             cdNotProcessed = cdCount;
+                        }
                     }
 
                     if (currentEntry.hasAudio()) {
@@ -123,8 +125,9 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
     private void addMedium(FileSystemWrapper properties) {
         final ReleaseMetadata releaseMetadata = new ReleaseMetadata();
         releaseMetadata.readFromFiles(properties);
-        if (releaseMetadata.getDiscNumber() == 0)
+        if (releaseMetadata.getDiscNumber() == 0) {
             releaseMetadata.setDiscNumber(discNumber(properties));
+        }
         releaseMetadata.getProperties().setIsMedium(true);
         releaseMetadataList.add(releaseMetadata);
     }

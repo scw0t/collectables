@@ -1,15 +1,14 @@
 package com.scwot.collectables.utils;
 
-import org.junit.Test;
-
 import java.io.File;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class DirHelperTest {
 
     private String testPath1 = "D:\\MUSIC\\albums\\Primal Scream - Evil Heat";
-    private String testPath2 = "D:\\MUSIC\\albums\\2001 - Bootleg Series, Volume 1 - [2001, Polydor, 514 589 067-2] (3CD)";
+    private String testPath2 = "D:\\MUSIC\\albums\\2001 - Bootleg Series, Volume 1 - "
+            + "[2001, Polydor, 514 589 067-2] (3CD)";
 
     @Test
     public void countFileTypes1() throws Exception {
@@ -28,9 +27,9 @@ public class DirHelperTest {
     }
 
     @Test
-    public void getCDFoldersCount() throws Exception {
+    public void getCdFoldersCount() throws Exception {
         File dir = new File(testPath2);
-        int cdFoldersCount = DirHelper.getCDFoldersCount(dir);
+        int cdFoldersCount = DirHelper.getCdFoldersCount(dir);
 
         System.out.println(cdFoldersCount);
     }

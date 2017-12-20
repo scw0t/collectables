@@ -20,7 +20,7 @@ public class FileSystemWrapper {
 
     private File currentDir;
     private String dirName;
-    private Integer isMultiCD;
+    private Integer isMultiCd;
     private Boolean hasMoreThanOneArtists = FALSE;
     private Boolean isMedium = FALSE;
 

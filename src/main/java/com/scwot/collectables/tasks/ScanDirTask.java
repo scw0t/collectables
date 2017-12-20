@@ -43,7 +43,6 @@ public class ScanDirTask extends Task {
         final DirHelper helper = new DirHelper();
         DirHelper.hasInnerFolder(dir);
         helper.countFileTypes(dir);
-        helper.hasAudio();
 
         if (helper.doesNotContainRelease(dir)) {
             IntStream.range(0, processedDirectoryList.size())
@@ -58,8 +57,8 @@ public class ScanDirTask extends Task {
                     .ifPresent(i -> processedDirectoryList.remove(i));
         }
 
-        final int cdSubFoldersCount = DirHelper.getCDFoldersCount(dir);
-        final int cdParentFolderCount = DirHelper.getCDFoldersCount(dir.getParentFile());
+        final int cdSubFoldersCount = DirHelper.getCdFoldersCount(dir);
+        final int cdParentFolderCount = DirHelper.getCdFoldersCount(dir.getParentFile());
 
         if (helper.hasAudio()
                 && cdSubFoldersCount == 0

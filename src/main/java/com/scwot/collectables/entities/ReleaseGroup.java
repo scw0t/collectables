@@ -52,6 +52,6 @@ public class ReleaseGroup {
             inverseJoinColumns = @JoinColumn(name = "genreId"))
     private List<Genre> genreList;
 
-    private Boolean VA;
+    private Boolean va;
 
 }

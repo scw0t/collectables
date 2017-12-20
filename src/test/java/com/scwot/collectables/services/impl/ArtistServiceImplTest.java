@@ -1,23 +1,5 @@
 package com.scwot.collectables.services.impl;
 
-import com.google.common.base.VerifyException;
-import com.google.common.collect.Lists;
-import com.scwot.collectables.AbstractTest;
-import com.scwot.collectables.entities.Artist;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.transaction.Transactional;
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -25,6 +7,20 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
+
+import com.google.common.base.VerifyException;
+import com.google.common.collect.Lists;
+import com.scwot.collectables.AbstractTest;
+import com.scwot.collectables.entities.Artist;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.util.List;
+import javax.transaction.Transactional;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ArtistServiceImplTest extends AbstractTest {
 
@@ -43,16 +39,16 @@ public class ArtistServiceImplTest extends AbstractTest {
     public void saveWithPhoto() throws Exception {
         URL url = getClass().getResource("/default/default-photo.jpg");
         File file = new File(url.getPath());
-        byte[] bFile = new byte[(int) file.length()];
+        byte[] fileBytes = new byte[(int) file.length()];
 
-        assertThat(bFile, is(notNullValue()));
+        assertThat(fileBytes, is(notNullValue()));
 
         try (final FileInputStream fileInputStream = new FileInputStream(file)) {
-            fileInputStream.read(bFile);
+            fileInputStream.read(fileBytes);
         }
 
         Artist artist = defaultArtist();
-        artist.setImage(bFile);
+        artist.setImage(fileBytes);
         artistService.save(artist);
 
         artist = artistService.findById(1L);
@@ -110,7 +106,7 @@ public class ArtistServiceImplTest extends AbstractTest {
     }
 
     @Test
-    public void deleteByID() throws Exception {
+    public void deleteById() throws Exception {
         final Long id = artistService.save(defaultArtist()).getArtistId();
 
         assertThat(artistService.findById(id).getArtistId(), is(id));
@@ -130,10 +126,10 @@ public class ArtistServiceImplTest extends AbstractTest {
     }
 
     @Test
-    public void findByMBID() throws Exception {
+    public void findByMbId() throws Exception {
         artistService.save(defaultArtist());
-        final Artist artistByMBID = artistService.findByMBID(ARTIST_MBID);
-        assertThat(artistByMBID.getMbid(), is(equalTo(ARTIST_MBID)));
+        final Artist artistByMbId = artistService.findByMbId(ARTIST_MBID);
+        assertThat(artistByMbId.getMbid(), is(equalTo(ARTIST_MBID)));
     }
 
     @Test
