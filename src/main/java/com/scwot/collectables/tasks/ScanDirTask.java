@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 import static com.scwot.collectables.utils.DirHelper.MACOSX_FOLDER_NAME;
 
-public class ScanDirTask extends Task {
+public class ScanDirTask extends Task<List<File>> {
 
     private List<File> inputDirectoryList;
     private List<File> processedDirectoryList;

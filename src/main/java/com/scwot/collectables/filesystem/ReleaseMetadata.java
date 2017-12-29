@@ -1,8 +1,11 @@
 package com.scwot.collectables.filesystem;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.Data;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
@@ -11,12 +14,14 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedSet;
 
 @Data
 public class ReleaseMetadata {
 
     private static final String VA_VALUE = "Various Artists";
+    public static final String EMPTY_STRING = "";
 
     private FileSystemWrapper properties;
     private List<Mp3FileWrapper> audioList;
@@ -40,11 +45,11 @@ public class ReleaseMetadata {
         SortedSet<String> years = Sets.newTreeSet();
 
         audioList.stream()
-                .peek((audio) -> artists.add(audio.getArtistTitle()))
-                .peek((audio) -> albums.add(audio.getAlbumTitle()))
-                .peek((audio) -> years.add(audio.getOrigYear()))
-                .peek((audio) -> years.add(audio.getYear()))
-                .peek((audio) -> genres.addAll(audio.getGenres()))
+                .peek((audio) -> artists.add(Optional.ofNullable(audio.getArtistTitle()).orElse(EMPTY_STRING)))
+                .peek((audio) -> albums.add(Optional.ofNullable(audio.getAlbumTitle()).orElse(EMPTY_STRING)))
+                .peek((audio) -> years.add(Optional.ofNullable(audio.getOrigYear()).orElse(EMPTY_STRING)))
+                .peek((audio) -> years.add(Optional.ofNullable(audio.getYear()).orElse(EMPTY_STRING)))
+                .peek((audio) -> genres.addAll(Optional.ofNullable(audio.getGenres()).orElse(Lists.newArrayList())))
                 .peek((audio) -> {
                     if (audio.getDiscNumber() != 0) {
                         discNumber = audio.getDiscNumber();

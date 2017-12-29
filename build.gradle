@@ -43,7 +43,9 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
     compile group: 'org.apache.commons', name: 'commons-text', version: '1.1'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+    compile group: 'fm.last', name: 'musicbrainz-data', version: '3.1.0'
     compile 'net.jthink:jaudiotagger:+'
+
     runtime 'com.h2database:h2:+'
 
     compileOnly 'org.projectlombok:lombok:+'

@@ -19,7 +19,7 @@ public class App extends AbstractJavaFxApplicationSupport {
     private ProjectsView projectsView;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         stage.setTitle(windowTitle);
         stage.setScene(new Scene(projectsView.getView()));
         stage.setResizable(true);

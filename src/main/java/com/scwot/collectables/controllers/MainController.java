@@ -5,20 +5,25 @@ import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
 import com.google.common.collect.Lists;
 import com.scwot.collectables.entities.Artist;
 import com.scwot.collectables.services.ArtistService;
+import com.scwot.collectables.tasks.ImportTask;
 import com.scwot.collectables.tasks.ScanDirTask;
 import com.scwot.collectables.ui.components.ArtistItem;
 import com.scwot.collectables.utils.DirHelper;
+import com.scwot.collectables.utils.GuiUtils;
 import com.scwot.collectables.utils.ImageUtils;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +37,36 @@ public class MainController {
 
     @Autowired
     private ArtistService artistService;
+
+    @FXML
+    public void handleOpenButtonAction() {
+        final Stage stage = (Stage) mainBox.getScene().getWindow();
+        final File selectedDir = GuiUtils.showDirectoryChooser(stage);
+        if (selectedDir.exists()) {
+            final List<File> dirs = filterDirectories(Lists.newArrayList(selectedDir));
+
+            if (!dirs.isEmpty()) {
+                searchForReleases(dirs);
+            }
+        }
+
+        System.out.println(selectedDir.getAbsolutePath());
+    }
+
+    @FXML
+    void handleTestButtonAction() {
+        Artist artist = artistService.save(dummyArtist());
+        artistListView.getItems().add(new ArtistItem(artist));
+    }
+
+    @FXML
+    public void handleCleanButtonAction() {
+        List<Artist> artistList = artistService.getAll();
+        for (Artist artist : artistList) {
+            artistService.delete(artist.getArtistId());
+        }
+        artistListView.getItems().clear();
+    }
 
     @FXML
     private void initialize() {
@@ -78,9 +113,11 @@ public class MainController {
     }
 
     private void crawlForReleaseData(List<File> processedDirs) {
-        for (File dir : processedDirs) {
-            System.out.println(dir.getAbsolutePath());
-        }
+        final ImportTask importTask = new ImportTask(processedDirs);
+
+        final Thread thread = new Thread(importTask);
+        thread.setDaemon(true);
+        thread.start();
 
         /*importTask.initialize(processedDirs);
         Thread thread = new Thread(importTask);
@@ -94,12 +131,6 @@ public class MainController {
                 .map(DirHelper::listFilesAndDirs)
                 .forEach(dirs::addAll);
         return dirs;
-    }
-
-    @FXML
-    void handleTestButtonAction() {
-        Artist artist = artistService.save(dummyArtist());
-        artistListView.getItems().add(new ArtistItem(artist));
     }
 
     private Artist dummyArtist() {

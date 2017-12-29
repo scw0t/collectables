@@ -35,15 +35,15 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
     private int entryCount = 0;
     private int cdNotProcessed = 0;
 
-    public void execute(File inpitDir) {
+    public void execute(File inputDir) {
         try {
-            root = new FileSystemWrapper(inpitDir);
-            walk(inpitDir);
+            root = new FileSystemWrapper(inputDir);
+            walk(inputDir);
 
             String rootStr = root.toString();
             System.out.println(rootStr);
 
-            for (FileSystemWrapper prop : root.getChilds()) {
+            for (FileSystemWrapper prop : root.getChildList()) {
                 String propStr = prop.toString();
                 System.out.println(propStr);
             }
