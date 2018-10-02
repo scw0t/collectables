@@ -1,35 +1,38 @@
 package com.scwot.collectables.filesystem;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.common.collect.Lists;
 import lombok.Data;
-
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotWriteException;
 import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
-import org.springframework.util.StringUtils;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Data
 public class Mp3FileWrapper {
 
-    public static final String EMPTY_STRING = "";
     public static final String CUSTOM_FIELD = "TXXX";
     public static final String CATALOGNUMBER_TAG_NAME = "CATALOGNUMBER";
     public static final String ORIGINALYEAR_TAG_NAME = "originalyear";
 
     private static final String UNKNOWN_VALUE = "[unknown]";
-    private static final String[] GENRE_DELIMITERS = {", ", ";", "\\", "/"};
+    private static final String[] GENRE_DELIMITERS = {", ", ";", "\\\\", "/"};
     private static final Pattern TRACK_PATTERN = Pattern.compile("^\\d{1,2}");
 
     private MP3File audioFile;
-    private int fileNum;
     private String fileName;
     private String artistTitle;
     private String albumTitle;
@@ -38,33 +41,40 @@ public class Mp3FileWrapper {
     private String origYear;
     private String label;
     private String catNum;
+    private String trackNumber;
+    private String mbReleaseId;
     private List<String> genres;
     private Boolean hasArtwork;
-    private String trackNumber;
     private Integer discNumber;
-    private String mbReleaseId;
     private int trackCount;
+    private int fileNum;
 
     public void read(File file) {
+        audioFile = (MP3File) readAudio(file);
+        processNullTag(audioFile);
+
+        artistTitle = fromTag(audioFile, FieldKey.ARTIST, UNKNOWN_VALUE);
+        albumTitle = fromTag(audioFile, FieldKey.ALBUM, UNKNOWN_VALUE);
+        mbReleaseId = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASEID, EMPTY);
+        label = fromTag(audioFile, FieldKey.RECORD_LABEL, EMPTY);
+        trackTitle = fromTag(audioFile, FieldKey.TITLE, UNKNOWN_VALUE);
+        trackNumber = fromTag(audioFile, FieldKey.TRACK, String.valueOf(trackCount));
+
+        year = boundedFromTag(audioFile, FieldKey.YEAR, EMPTY);
+        origYear = origYearValue(audioFile, FieldKey.ORIGINAL_YEAR, EMPTY);
+        discNumber = discNumberValue(audioFile);
+        genres = genresValue(audioFile);
+        hasArtwork = artworkValue(audioFile);
+        catNum = fromCustomTag(audioFile, CATALOGNUMBER_TAG_NAME, EMPTY);
+    }
+
+    protected AudioFile readAudio(File file) {
         try {
-            audioFile = (MP3File) AudioFileIO.read(file);
-            processNullTag(audioFile);
-
-            artistTitle = fromTag(audioFile, FieldKey.ARTIST, UNKNOWN_VALUE);
-            albumTitle = fromTag(audioFile, FieldKey.ALBUM, UNKNOWN_VALUE);
-            mbReleaseId = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASEID, EMPTY_STRING);
-            label = fromTag(audioFile, FieldKey.RECORD_LABEL, EMPTY_STRING);
-            trackTitle = fromTag(audioFile, FieldKey.TITLE, UNKNOWN_VALUE);
-            trackNumber = fromTag(audioFile, FieldKey.TRACK, String.valueOf(trackCount));
-
-            year = boundedFromTag(audioFile, FieldKey.YEAR, EMPTY_STRING);
-            origYear = origYearValue(audioFile, FieldKey.ORIGINAL_YEAR, EMPTY_STRING);
-            discNumber = discNumberValue(audioFile);
-            genres = genresValue(audioFile);
-            hasArtwork = artworkValue(audioFile);
-            catNum = fromCustomTag(audioFile, CATALOGNUMBER_TAG_NAME, EMPTY_STRING);
+            return AudioFileIO.read(file);
         } catch (Exception ex) {
             System.out.println(ex.getMessage() + " " + file.getAbsolutePath());
+            throw new RuntimeException("Error while trying to read audio file: "
+                    + file.getAbsolutePath() + "\n" + ex.getMessage(), ex);
         }
     }
 
@@ -81,7 +91,7 @@ public class Mp3FileWrapper {
         final String value = boundedFromTag(audioFile, fieldKey, defaultValue);
         final String origYear = fromCustomTag(audioFile, ORIGINALYEAR_TAG_NAME, defaultValue);
 
-        if (!value.isEmpty() && (Integer.parseInt(value) > Integer.parseInt(origYear))) {
+        if (StringUtils.isNotEmpty(value) && (Integer.parseInt(value) > Integer.parseInt(origYear))) {
             return origYear;
         }
 
@@ -92,7 +102,7 @@ public class Mp3FileWrapper {
         final List<TagField> tags = audioFile.getID3v2Tag().getFields(CUSTOM_FIELD);
         return tags.stream()
                 .map(tag -> tagValue(tag.toString(), customTagName))
-                .filter(value -> !value.isEmpty())
+                .filter(StringUtils::isNotEmpty)
                 .findFirst()
                 .orElse(defaultValue);
     }
@@ -100,12 +110,12 @@ public class Mp3FileWrapper {
     private static int discNumberValue(MP3File audioFile) {
         int value = 0;
         String discNumberTag = audioFile.getTag().getFirst(FieldKey.DISC_NO);
-        if (!EMPTY_STRING.equals(discNumberTag)) {
+        if (StringUtils.isNotEmpty(discNumberTag)) {
             discNumberTag = discNumberTag
-                    .replaceFirst("^0", EMPTY_STRING)
-                    .replaceAll("/.+", EMPTY_STRING)
-                    .replaceAll("\\D", EMPTY_STRING);
-            if (!EMPTY_STRING.equals(discNumberTag)) {
+                    .replaceFirst("^0", EMPTY)
+                    .replaceAll("/.+", EMPTY)
+                    .replaceAll("\\D", EMPTY);
+            if (StringUtils.isNotEmpty(discNumberTag)) {
                 value = Integer.parseInt(discNumberTag);
             }
         }
@@ -113,25 +123,39 @@ public class Mp3FileWrapper {
     }
 
     private static List<String> genresValue(MP3File audioFile) {
-        List<String> genresList = Collections.emptyList();
-        String[] genres = splittedGenres(audioFile.getTag().getFirst(FieldKey.GENRE));
-        if (genres.length > 0) {
-            Collections.addAll(genresList, genres);
-        } else {
-            genresList.add(audioFile.getTag().getFirst(FieldKey.GENRE));
+        List<String> genresList = Lists.newArrayList();
+        String[] genres = splitGenres(audioFile.getTag().getFirst(FieldKey.GENRE));
+        if (ArrayUtils.isEmpty(genres)) {
+            return Collections.emptyList();
         }
+
+        Collections.addAll(genresList, genres);
+
         return genresList;
     }
 
-    private static String[] splittedGenres(String genreString) {
-        String[] splittedGenres = {};
+    private static String[] splitGenres(String genreString) {
+        if (StringUtils.isEmpty(genreString)) {
+            return null;
+        }
+
+        String[] splitGenres = {};
         for (String delimiter : GENRE_DELIMITERS) {
             if (genreString.contains(delimiter)) {
-                splittedGenres = genreString.split(delimiter);
+                splitGenres = genreString.split(delimiter);
+                for (int i = 0; i < splitGenres.length; i++) {
+                    splitGenres[i] = splitGenres[i].trim();
+                }
+
                 break;
             }
         }
-        return splittedGenres;
+
+        if (splitGenres.length == 0) {
+            return new String[]{genreString};
+        }
+
+        return splitGenres;
     }
 
     private static boolean artworkValue(MP3File audioFile) {
@@ -146,7 +170,7 @@ public class Mp3FileWrapper {
         int value = 0;
         String trackTag = audioFile.getTag().getFirst(FieldKey.TRACK);
 
-        if (!trackTag.isEmpty()) {
+        if (trackTag != null && !trackTag.isEmpty()) {
             Matcher matcher = TRACK_PATTERN.matcher(trackTag);
             if (matcher.find()) {
                 value = Integer.parseInt(matcher.group(0));
@@ -157,14 +181,14 @@ public class Mp3FileWrapper {
     }
 
     private static String tagValue(String tag, String key) {
-        String value = EMPTY_STRING;
+        String value = EMPTY;
         if (tag.contains(key)) {
             value = tag.split("; ")[1];
             value = value
-                    .replaceAll("Text=", EMPTY_STRING)
-                    .replaceAll("\"", EMPTY_STRING)
-                    .replaceAll(";", EMPTY_STRING)
-                    .replaceAll("\u0000", EMPTY_STRING);
+                    .replaceAll("Text=", EMPTY)
+                    .replaceAll("\"", EMPTY)
+                    .replaceAll(";", EMPTY)
+                    .replaceAll("\u0000", EMPTY);
         }
         return value;
     }
@@ -183,7 +207,7 @@ public class Mp3FileWrapper {
 
     private static String fromTag(MP3File audioFile, FieldKey fieldKey, String defaultValue) {
         final String tagValue = fromAudio(audioFile, fieldKey);
-        if (!StringUtils.isEmpty(tagValue)) {
+        if (!isEmpty(tagValue)) {
             return tagValue;
         }
 
@@ -196,7 +220,7 @@ public class Mp3FileWrapper {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("File: ");
         builder.append(audioFile.getFile().getAbsolutePath());
         builder.append(System.lineSeparator());
@@ -222,13 +246,9 @@ public class Mp3FileWrapper {
         builder.append(discNumber);
         builder.append(System.lineSeparator());
         builder.append("Genres: ");
-        for (String genre : genres) {
-            builder.append(genre);
-            builder.append(" / ");
-        }
+        builder.append(String.join(" / ", genres));
         builder.append(System.lineSeparator());
         builder.append("--------------------------");
         return builder.toString();
     }
-
 }

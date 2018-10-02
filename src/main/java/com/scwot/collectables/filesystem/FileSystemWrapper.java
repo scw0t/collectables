@@ -1,7 +1,6 @@
 package com.scwot.collectables.filesystem;
 
 import com.google.common.collect.Lists;
-
 import lombok.Data;
 
 import java.io.File;
@@ -27,6 +26,7 @@ public class FileSystemWrapper {
 
     public FileSystemWrapper(File inputDir) {
         dirName = inputDir.getName();
+        currentDir = inputDir;
     }
 
     public void addChild(FileSystemWrapper child) {

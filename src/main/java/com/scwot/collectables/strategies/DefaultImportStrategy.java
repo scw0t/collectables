@@ -5,6 +5,9 @@ import com.scwot.collectables.filesystem.FileSystemWrapper;
 import com.scwot.collectables.filesystem.Mp3FileWrapper;
 import com.scwot.collectables.filesystem.ReleaseMetadata;
 import com.scwot.collectables.utils.DirHelper;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +18,9 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
-import lombok.Data;
-
 @Data
+@Slf4j
+@Service
 public class DefaultImportStrategy/* implements InputStrategy*/ {
 
     private FileSystemWrapper root;
@@ -35,10 +38,17 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
     private int entryCount = 0;
     private int cdNotProcessed = 0;
 
-    public void execute(File inputDir) {
+    public void execute(String inputDir) {
+        final File currentDir = new File(inputDir);
+        if (!currentDir.exists()) {
+            log.warn(inputDir + " not exists!");
+            return;
+        }
+
+
         try {
-            root = new FileSystemWrapper(inputDir);
-            walk(inputDir);
+            root = new FileSystemWrapper(currentDir);
+            walk(currentDir);
 
             String rootStr = root.toString();
             System.out.println(rootStr);

@@ -4,18 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.Data;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedSet;
+import java.util.*;
 
 @Data
 public class ReleaseMetadata {
@@ -37,6 +28,7 @@ public class ReleaseMetadata {
     private String mbReleaseId;
 
     public void readFromFiles(FileSystemWrapper properties) {
+        setProperties(properties);
         audioList = properties.getListOfAudios();
 
         SortedSet<String> artists = Sets.newTreeSet();
@@ -50,15 +42,13 @@ public class ReleaseMetadata {
                 .peek((audio) -> years.add(Optional.ofNullable(audio.getOrigYear()).orElse(EMPTY_STRING)))
                 .peek((audio) -> years.add(Optional.ofNullable(audio.getYear()).orElse(EMPTY_STRING)))
                 .peek((audio) -> genres.addAll(Optional.ofNullable(audio.getGenres()).orElse(Lists.newArrayList())))
-                .peek((audio) -> {
-                    if (audio.getDiscNumber() != 0) {
-                        discNumber = audio.getDiscNumber();
-                    }
+                .peek((audio) -> {discNumber = audio.getDiscNumber();
                 }).forEach((audio) -> yearAlbum.put(audio.getAlbumTitle(), audio.getYear()));
 
-        mbReleaseId = audioList.get(0).getMbReleaseId();
-        label = audioList.get(0).getLabel();
-        catNum = audioList.get(0).getCatNum();
+        final Mp3FileWrapper firstTrack = audioList.get(0);
+        mbReleaseId = firstTrack.getMbReleaseId() != null ? firstTrack.getMbReleaseId() : StringUtils.EMPTY;
+        label = firstTrack.getLabel() != null ? firstTrack.getLabel() : StringUtils.EMPTY;
+        catNum = firstTrack.getCatNum() != null ? firstTrack.getCatNum() : StringUtils.EMPTY;
 
         artist = pickArtistNameTitle(artists);
 
