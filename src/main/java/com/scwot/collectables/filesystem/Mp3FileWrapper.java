@@ -2,6 +2,7 @@ package com.scwot.collectables.filesystem;
 
 import com.google.common.collect.Lists;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jaudiotagger.audio.AudioFile;
@@ -13,6 +14,7 @@ import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -21,15 +23,17 @@ import java.util.regex.Pattern;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+@Slf4j
 @Data
 public class Mp3FileWrapper {
 
     public static final String CUSTOM_FIELD = "TXXX";
     public static final String CATALOGNUMBER_TAG_NAME = "CATALOGNUMBER";
     public static final String ORIGINALYEAR_TAG_NAME = "originalyear";
+    public static final String ARTISTS_TAG_NAME = "Artists";
 
     private static final String UNKNOWN_VALUE = "[unknown]";
-    private static final String[] GENRE_DELIMITERS = {", ", ";", "\\\\", "/"};
+    private static final String[] DELIMITERS = {", ", ";", "\\\\", "/"};
     private static final Pattern TRACK_PATTERN = Pattern.compile("^\\d{1,2}");
 
     private MP3File audioFile;
@@ -44,6 +48,7 @@ public class Mp3FileWrapper {
     private String trackNumber;
     private String mbReleaseId;
     private List<String> genres;
+    private List<String> artists;
     private Boolean hasArtwork;
     private Integer discNumber;
     private int trackCount;
@@ -63,7 +68,8 @@ public class Mp3FileWrapper {
         year = boundedFromTag(audioFile, FieldKey.YEAR, EMPTY);
         origYear = origYearValue(audioFile, FieldKey.ORIGINAL_YEAR, EMPTY);
         discNumber = discNumberValue(audioFile);
-        genres = genresValue(audioFile);
+        genres = listFromTag(audioFile, FieldKey.GENRE);
+        artists = Arrays.asList(splitString(fromCustomTag(audioFile, ARTISTS_TAG_NAME, EMPTY)));
         hasArtwork = artworkValue(audioFile);
         catNum = fromCustomTag(audioFile, CATALOGNUMBER_TAG_NAME, EMPTY);
     }
@@ -72,7 +78,7 @@ public class Mp3FileWrapper {
         try {
             return AudioFileIO.read(file);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage() + " " + file.getAbsolutePath());
+            log.error(ex.getMessage() + " " + file.getAbsolutePath());
             throw new RuntimeException("Error while trying to read audio file: "
                     + file.getAbsolutePath() + "\n" + ex.getMessage(), ex);
         }
@@ -122,40 +128,40 @@ public class Mp3FileWrapper {
         return value;
     }
 
-    private static List<String> genresValue(MP3File audioFile) {
-        List<String> genresList = Lists.newArrayList();
-        String[] genres = splitGenres(audioFile.getTag().getFirst(FieldKey.GENRE));
-        if (ArrayUtils.isEmpty(genres)) {
+    private static List<String> listFromTag(MP3File audioFile, FieldKey fieldKey) {
+        List<String> resultList = Lists.newArrayList();
+        String[] resultSplitArray = splitString(audioFile.getTag().getFirst(fieldKey));
+        if (ArrayUtils.isEmpty(resultSplitArray)) {
             return Collections.emptyList();
         }
 
-        Collections.addAll(genresList, genres);
+        Collections.addAll(resultList, resultSplitArray);
 
-        return genresList;
+        return resultList;
     }
 
-    private static String[] splitGenres(String genreString) {
-        if (StringUtils.isEmpty(genreString)) {
-            return null;
+    private static String[] splitString(String tagString) {
+        if (StringUtils.isEmpty(tagString)) {
+            return new String[]{};
         }
 
-        String[] splitGenres = {};
-        for (String delimiter : GENRE_DELIMITERS) {
-            if (genreString.contains(delimiter)) {
-                splitGenres = genreString.split(delimiter);
-                for (int i = 0; i < splitGenres.length; i++) {
-                    splitGenres[i] = splitGenres[i].trim();
+        String[] splitString = {};
+        for (String delimiter : DELIMITERS) {
+            if (tagString.contains(delimiter)) {
+                splitString = tagString.split(delimiter);
+                for (int i = 0; i < splitString.length; i++) {
+                    splitString[i] = splitString[i].trim();
                 }
 
                 break;
             }
         }
 
-        if (splitGenres.length == 0) {
-            return new String[]{genreString};
+        if (splitString.length == 0) {
+            return new String[]{tagString};
         }
 
-        return splitGenres;
+        return splitString;
     }
 
     private static boolean artworkValue(MP3File audioFile) {

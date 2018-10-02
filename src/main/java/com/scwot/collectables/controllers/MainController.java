@@ -1,7 +1,5 @@
 package com.scwot.collectables.controllers;
 
-import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
-
 import com.google.common.collect.Lists;
 import com.scwot.collectables.entities.Artist;
 import com.scwot.collectables.services.ArtistService;
@@ -11,10 +9,6 @@ import com.scwot.collectables.ui.components.ArtistItem;
 import com.scwot.collectables.utils.DirHelper;
 import com.scwot.collectables.utils.GuiUtils;
 import com.scwot.collectables.utils.ImageUtils;
-
-import java.io.File;
-import java.util.List;
-import java.util.Objects;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.input.DragEvent;
@@ -22,10 +16,13 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.List;
+
+import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
 
 @Component
 public class MainController {
@@ -101,15 +98,14 @@ public class MainController {
 
     private void searchForReleases(List<File> dirs) {
         final ScanDirTask scanTask = new ScanDirTask(dirs);
-
-        final Thread scanProcessThread = new Thread(scanTask);
-        scanProcessThread.setDaemon(true);
-        scanProcessThread.start();
-
         scanTask.setOnSucceeded(event -> {
             final List<File> processedDirs = scanTask.getProcessedDirectoryList();
             crawlForReleaseData(processedDirs);
         });
+
+        final Thread scanProcessThread = new Thread(scanTask);
+        scanProcessThread.setDaemon(true);
+        scanProcessThread.start();
     }
 
     private void crawlForReleaseData(List<File> processedDirs) {
@@ -118,10 +114,6 @@ public class MainController {
         final Thread thread = new Thread(importTask);
         thread.setDaemon(true);
         thread.start();
-
-        /*importTask.initialize(processedDirs);
-        Thread thread = new Thread(importTask);
-        thread.start();*/
     }
 
     private List<File> filterDirectories(List<File> files) {

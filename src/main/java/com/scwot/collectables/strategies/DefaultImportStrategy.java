@@ -7,6 +7,7 @@ import com.scwot.collectables.filesystem.ReleaseMetadata;
 import com.scwot.collectables.utils.DirHelper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -30,35 +31,28 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
     private String year;
     private String origYear;
     private String mbReleaseId;
-    private List<ReleaseMetadata> releaseMetadataList = Lists.newArrayList();
     private String label;
     private String catNumber;
+    private List<String> artists = Lists.newArrayList();
+    private List<ReleaseMetadata> releaseMetadataList = Lists.newArrayList();
 
     private int cdCount = 0;
     private int entryCount = 0;
     private int cdNotProcessed = 0;
 
-    public void execute(String inputDir) {
-        final File currentDir = new File(inputDir);
+    public void execute(File currentDir) {
         if (!currentDir.exists()) {
-            log.warn(inputDir + " not exists!");
+            log.warn(currentDir + " not exists!");
             return;
         }
 
+        root = new FileSystemWrapper(currentDir);
+        walk(currentDir);
 
-        try {
-            root = new FileSystemWrapper(currentDir);
-            walk(currentDir);
+        log.debug(root.toString());
 
-            String rootStr = root.toString();
-            System.out.println(rootStr);
-
-            for (FileSystemWrapper prop : root.getChildList()) {
-                String propStr = prop.toString();
-                System.out.println(propStr);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (FileSystemWrapper prop : root.getChildList()) {
+            log.debug(prop.toString());
         }
 
         if (!releaseMetadataList.isEmpty() && releaseMetadataList.get(0) != null) {
@@ -82,7 +76,7 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
                                                          BasicFileAttributes attrs) {
                     final FileSystemWrapper currentEntry = new FileSystemWrapper(dir.toFile());
 
-                    System.out.println("-----> Curr dir: " + dir.toFile().toString());
+                    log.debug("-----> Curr dir: " + dir.toFile().toString());
                     read(dir, currentEntry);
 
                     if (entryCount == 0) {
@@ -101,7 +95,7 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
 
                     entryCount++;
 
-                    System.out.println("--------------");
+                    log.debug("--------------");
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -114,7 +108,7 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
     private void read(Path dir, FileSystemWrapper currentEntry) {
         final File[] list = dir.toFile().listFiles();
         int trackCount = 0;
-        if (list != null) {
+        if (ArrayUtils.isNotEmpty(list)) {
             for (File file : list) {
                 if (!file.isDirectory()) {
                     if (DirHelper.isAudioFile(file)) {
@@ -133,8 +127,8 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
     }
 
     private void addMedium(FileSystemWrapper properties) {
-        final ReleaseMetadata releaseMetadata = new ReleaseMetadata();
-        releaseMetadata.readFromFiles(properties);
+        final ReleaseMetadata releaseMetadata = new ReleaseMetadata(properties);
+        releaseMetadata.readFromFiles();
         if (releaseMetadata.getDiscNumber() == 0) {
             releaseMetadata.setDiscNumber(discNumber(properties));
         }
@@ -149,5 +143,4 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
         }
         return cdN;
     }
-
 }

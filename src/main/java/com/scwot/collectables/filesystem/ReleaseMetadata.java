@@ -4,15 +4,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.getLevenshteinDistance;
+
+@Slf4j
 @Data
 public class ReleaseMetadata {
 
     private static final String VA_VALUE = "Various Artists";
-    public static final String EMPTY_STRING = "";
 
     private FileSystemWrapper properties;
     private List<Mp3FileWrapper> audioList;
@@ -27,8 +30,11 @@ public class ReleaseMetadata {
     private Map<String, String> yearAlbum = Maps.newHashMap();
     private String mbReleaseId;
 
-    public void readFromFiles(FileSystemWrapper properties) {
-        setProperties(properties);
+    public ReleaseMetadata(FileSystemWrapper properties) {
+        this.properties = properties;
+    }
+
+    public void readFromFiles() {
         audioList = properties.getListOfAudios();
 
         SortedSet<String> artists = Sets.newTreeSet();
@@ -37,18 +43,18 @@ public class ReleaseMetadata {
         SortedSet<String> years = Sets.newTreeSet();
 
         audioList.stream()
-                .peek((audio) -> artists.add(Optional.ofNullable(audio.getArtistTitle()).orElse(EMPTY_STRING)))
-                .peek((audio) -> albums.add(Optional.ofNullable(audio.getAlbumTitle()).orElse(EMPTY_STRING)))
-                .peek((audio) -> years.add(Optional.ofNullable(audio.getOrigYear()).orElse(EMPTY_STRING)))
-                .peek((audio) -> years.add(Optional.ofNullable(audio.getYear()).orElse(EMPTY_STRING)))
+                .peek((audio) -> artists.add(Optional.ofNullable(audio.getArtistTitle()).orElse(EMPTY)))
+                .peek((audio) -> albums.add(Optional.ofNullable(audio.getAlbumTitle()).orElse(EMPTY)))
+                .peek((audio) -> years.add(Optional.ofNullable(audio.getOrigYear()).orElse(EMPTY)))
+                .peek((audio) -> years.add(Optional.ofNullable(audio.getYear()).orElse(EMPTY)))
                 .peek((audio) -> genres.addAll(Optional.ofNullable(audio.getGenres()).orElse(Lists.newArrayList())))
-                .peek((audio) -> {discNumber = audio.getDiscNumber();
-                }).forEach((audio) -> yearAlbum.put(audio.getAlbumTitle(), audio.getYear()));
+                .peek((audio) -> discNumber = audio.getDiscNumber())
+                .forEach((audio) -> yearAlbum.put(audio.getAlbumTitle(), audio.getYear()));
 
         final Mp3FileWrapper firstTrack = audioList.get(0);
-        mbReleaseId = firstTrack.getMbReleaseId() != null ? firstTrack.getMbReleaseId() : StringUtils.EMPTY;
-        label = firstTrack.getLabel() != null ? firstTrack.getLabel() : StringUtils.EMPTY;
-        catNum = firstTrack.getCatNum() != null ? firstTrack.getCatNum() : StringUtils.EMPTY;
+        mbReleaseId = firstTrack.getMbReleaseId() != null ? firstTrack.getMbReleaseId() : EMPTY;
+        label = firstTrack.getLabel() != null ? firstTrack.getLabel() : EMPTY;
+        catNum = firstTrack.getCatNum() != null ? firstTrack.getCatNum() : EMPTY;
 
         artist = pickArtistNameTitle(artists);
 
@@ -56,27 +62,19 @@ public class ReleaseMetadata {
         recordedYear = Collections.min(years);
 
         if (albums.size() > 1) {
-            StringBuilder albStr = new StringBuilder();
             if (albums.size() == 2) {
-                if (StringUtils.getLevenshteinDistance(albums.first(), albums.last()) < 2) {
-                    albStr = new StringBuilder(albums.first());
+                if (getLevenshteinDistance(albums.first(), albums.last()) < 2) {
+                    album = albums.first();
                 } else {
-                    System.out.println("Album size = 2: \"" + albums.first() + "\", \"" + albums.last() + "\"");
-                    for (int i = 0; i < albums.size(); i++) {
-                        albStr.append(get(albums, i));
-                        if (i < albums.size() - 1) {
-                            albStr.append(" / ");
-                        }
-                    }
+                    album = String.join(" / ", albums);
+                    log.debug("Multiple albums: " + album);
                 }
             }
-            album = albStr.toString();
         } else {
             album = albums.first();
         }
 
         audioList.sort(Comparator.comparingInt(Mp3FileWrapper::getTrack));
-
     }
 
     /*TODO: fix for collaboration albums / splits / etc.*/

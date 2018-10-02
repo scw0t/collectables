@@ -2,11 +2,12 @@ package com.scwot.collectables.tasks;
 
 import com.google.common.collect.Lists;
 import com.scwot.collectables.entities.Release;
+import com.scwot.collectables.strategies.DefaultImportStrategy;
+import javafx.concurrent.Task;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-import javafx.concurrent.Task;
 
 public class ImportTask extends Task<Collection<Release>> {
 
@@ -19,7 +20,7 @@ public class ImportTask extends Task<Collection<Release>> {
     }
 
     @Override
-    protected Collection<Release> call() throws Exception {
+    protected Collection<Release> call() {
 
         for (File dir : processedDirectoryList) {
             addRelease(dir);
@@ -30,11 +31,10 @@ public class ImportTask extends Task<Collection<Release>> {
 
     private void addRelease(File dir) {
 
-        /*final DefaultImportStrategy strategy = new DefaultImportStrategy();
+        final DefaultImportStrategy strategy = new DefaultImportStrategy();
         strategy.execute(dir);
-        Artist.builder()
-                .name(strategy.getArtist())
-                .build();*/
+        System.out.println();
+
 
     }
 }
