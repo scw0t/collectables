@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="AnchorPane" minHeight="400.0" minWidth="600.0" prefHeight="543.0" prefWidth="831.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scwot.collectables.controllers.MainController">
+<AnchorPane id="AnchorPane" minHeight="400.0" minWidth="600.0" prefHeight="700.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.scwot.collectables.controller.MainController">
     <VBox fx:id="mainBox" minHeight="600.0" minWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <MenuBar>
             <Menu mnemonicParsing="false" text="File">
@@ -36,7 +36,7 @@
             <Button fx:id="cleanButton" mnemonicParsing="false" onAction="#handleCleanButtonAction" text="Clean" />
             <Button fx:id="testButton" mnemonicParsing="false" onAction="#handleTestButtonAction" text="Test" />
         </ToolBar>
-        <SplitPane id="SplitPane" fx:id="splitPane" dividerPositions="0.36550060313630883" VBox.vgrow="ALWAYS">
+        <SplitPane id="SplitPane" fx:id="splitPane" dividerPositions="0.2" VBox.vgrow="ALWAYS">
             <VBox maxWidth="500.0" minWidth="300.0">
                 <TabPane fx:id="tPane1" prefHeight="422.0" prefWidth="214.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                     <Tab text="Коллекция">

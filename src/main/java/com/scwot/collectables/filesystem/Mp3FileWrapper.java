@@ -31,8 +31,9 @@ public class Mp3FileWrapper {
     public static final String CATALOGNUMBER_TAG_NAME = "CATALOGNUMBER";
     public static final String ORIGINALYEAR_TAG_NAME = "originalyear";
     public static final String ARTISTS_TAG_NAME = "Artists";
+    public static final String RELEASE_COUNTRY = "MusicBrainz Album Release Country";
+    public static final String UNKNOWN_VALUE = "[unknown]";
 
-    private static final String UNKNOWN_VALUE = "[unknown]";
     private static final String[] DELIMITERS = {", ", ";", "\\\\", "/"};
     private static final Pattern TRACK_PATTERN = Pattern.compile("^\\d{1,2}");
 
@@ -40,28 +41,44 @@ public class Mp3FileWrapper {
     private String fileName;
     private String artistTitle;
     private String albumTitle;
+    private String albumArtistTitle;
     private String trackTitle;
     private String year;
     private String origYear;
-    private String label;
-    private String catNum;
+    private List<String> labels;
+    private List<String> catNums;
     private String trackNumber;
     private String mbReleaseId;
+    private String mbReleaseGroupId;
+    private String mbArtistId;
+    private String mbTrackId;
+    private String releaseCountry;
+    private String releaseStatus;
+    private String releaseType;
     private List<String> genres;
     private List<String> artists;
     private Boolean hasArtwork;
     private Integer discNumber;
     private int trackCount;
     private int fileNum;
+    private Long length;
 
     public void read(File file) {
         audioFile = (MP3File) readAudio(file);
         processNullTag(audioFile);
 
+        length = audioFile.getMP3AudioHeader().getAudioDataLength();
         artistTitle = fromTag(audioFile, FieldKey.ARTIST, UNKNOWN_VALUE);
         albumTitle = fromTag(audioFile, FieldKey.ALBUM, UNKNOWN_VALUE);
+        albumArtistTitle = fromTag(audioFile, FieldKey.ALBUM_ARTIST, UNKNOWN_VALUE);
         mbReleaseId = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASEID, EMPTY);
-        label = fromTag(audioFile, FieldKey.RECORD_LABEL, EMPTY);
+        mbReleaseGroupId = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASE_GROUP_ID, EMPTY);
+        mbArtistId = fromTag(audioFile, FieldKey.MUSICBRAINZ_ARTISTID, EMPTY);
+        mbTrackId = fromTag(audioFile, FieldKey.MUSICBRAINZ_TRACK_ID, EMPTY);
+        releaseCountry = fromCustomTag(audioFile, RELEASE_COUNTRY, EMPTY);
+        releaseStatus = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASE_STATUS, EMPTY);
+        releaseType = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASE_TYPE, EMPTY);
+        labels = Arrays.asList(splitString(fromTag(audioFile, FieldKey.RECORD_LABEL, EMPTY)));
         trackTitle = fromTag(audioFile, FieldKey.TITLE, UNKNOWN_VALUE);
         trackNumber = fromTag(audioFile, FieldKey.TRACK, String.valueOf(trackCount));
 
@@ -71,7 +88,7 @@ public class Mp3FileWrapper {
         genres = listFromTag(audioFile, FieldKey.GENRE);
         artists = Arrays.asList(splitString(fromCustomTag(audioFile, ARTISTS_TAG_NAME, EMPTY)));
         hasArtwork = artworkValue(audioFile);
-        catNum = fromCustomTag(audioFile, CATALOGNUMBER_TAG_NAME, EMPTY);
+        catNums = Arrays.asList(splitString(fromCustomTag(audioFile, CATALOGNUMBER_TAG_NAME, EMPTY)));
     }
 
     protected AudioFile readAudio(File file) {
