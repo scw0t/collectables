@@ -45,7 +45,7 @@ public class ReleaseAdapter {
 
         /*ReleaseGroup.builder()
                 .name(metadata.getAlbumTitle())
-                .artistSet(artists)
+                .artistList(artists)
                 .mbid(metadata.getReleaseGroupMBID())
                 .type(metadata.getReleaseType())*/
     }

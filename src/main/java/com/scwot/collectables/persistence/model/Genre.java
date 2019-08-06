@@ -1,5 +1,6 @@
 package com.scwot.collectables.persistence.model;
 
+import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -29,10 +30,46 @@ public class Genre {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "genre_releaseGroup",
-            joinColumns = @JoinColumn(name = "genreId"),
-            inverseJoinColumns = @JoinColumn(name = "releaseGroupId"))
-    private List<ReleaseGroup> releaseGroupList;
+    private String description;
+
+    @Builder.Default
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "genre_release_group",
+            joinColumns = @JoinColumn(name = "genre_id"),
+            inverseJoinColumns = @JoinColumn(name = "release_group_id"))
+    private Set<ReleaseGroup> releaseGroups = Sets.newHashSet();
+
+    @Builder.Default
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "genre_artist",
+            joinColumns = @JoinColumn(name = "genre_id"),
+            inverseJoinColumns = @JoinColumn(name = "artist_id"))
+    private Set<Artist> artists = Sets.newHashSet();
+
+    public void addArtist(final Artist artist) {
+        artists.add(artist);
+        artist.getGenres().add(this);
+    }
+
+    public void removeArtist(final Artist artist) {
+        artists.remove(artist);
+        artist.getGenres().remove(this);
+    }
+
+    public void addReleaseGroup(final ReleaseGroup releaseGroup) {
+        releaseGroups.add(releaseGroup);
+        releaseGroup.getGenres().add(this);
+    }
+
+    public void removeReleaseGroup(final ReleaseGroup releaseGroup) {
+        releaseGroups.remove(releaseGroup);
+        releaseGroup.getGenres().remove(this);
+    }
 
 }

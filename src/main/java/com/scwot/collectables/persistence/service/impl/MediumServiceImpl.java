@@ -6,10 +6,12 @@ import com.scwot.collectables.persistence.service.MediumService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.google.common.base.Verify.verifyNotNull;
 
 @Service
+@Transactional
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class MediumServiceImpl implements MediumService {
 
@@ -17,7 +19,7 @@ public class MediumServiceImpl implements MediumService {
 
     @Override
     public Medium find(final Long mediumId) {
-        return mediumRepository.findOne(verifyNotNull(mediumId));
+        return mediumRepository.getOne(verifyNotNull(mediumId));
     }
 
     @Override
@@ -27,6 +29,6 @@ public class MediumServiceImpl implements MediumService {
 
     @Override
     public void delete(final Long mediumId) {
-        mediumRepository.delete(verifyNotNull(mediumId));
+        mediumRepository.deleteById(verifyNotNull(mediumId));
     }
 }

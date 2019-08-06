@@ -6,10 +6,12 @@ import com.scwot.collectables.persistence.service.LabelService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.google.common.base.Verify.verifyNotNull;
 
 @Service
+@Transactional
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class LabelServiceImpl implements LabelService {
 
@@ -17,7 +19,7 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
     public Label find(final Long labelId) {
-        return labelRepository.findOne(verifyNotNull(labelId));
+        return labelRepository.getOne(verifyNotNull(labelId));
     }
 
     @Override
@@ -27,6 +29,6 @@ public class LabelServiceImpl implements LabelService {
 
     @Override
     public void delete(final Long labelId) {
-        labelRepository.delete(verifyNotNull(labelId));
+        labelRepository.deleteById(verifyNotNull(labelId));
     }
 }

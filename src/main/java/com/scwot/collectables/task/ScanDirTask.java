@@ -31,9 +31,6 @@ public class ScanDirTask extends Task<List<File>> {
 
     private void removeUnwantedDirs(File dir) {
         if (dir.getName().equals(MACOSX_FOLDER_NAME)) {
-            if (dir.exists()) {
-                DirHelper.deleteDirectory(dir);
-            }
 
             processedDirectoryList.removeIf(next -> next.getAbsolutePath().contains(dir.getName()));
 

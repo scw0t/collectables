@@ -1,6 +1,7 @@
 package com.scwot.collectables.controller;
 
 import com.google.common.collect.Lists;
+import com.scwot.collectables.enums.ArtistType;
 import com.scwot.collectables.persistence.model.Artist;
 import com.scwot.collectables.persistence.service.ArtistService;
 import com.scwot.collectables.task.ImportTask;
@@ -20,9 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Component
 public class MainController {
@@ -42,8 +45,8 @@ public class MainController {
         if (selectedDir.exists()) {
             final List<File> dirs = filterDirectories(Lists.newArrayList(selectedDir));
 
-            if (!dirs.isEmpty()) {
-                searchForReleases(dirs);
+            if (isNotEmpty(dirs)) {
+                lookup(dirs);
             }
         }
 
@@ -89,31 +92,27 @@ public class MainController {
                 event.setDropCompleted(true);
 
                 if (event.isDropCompleted()) {
-                    searchForReleases(dirs);
+                    lookup(dirs);
                 }
                 event.consume();
             }
         });
     }
 
-    private void searchForReleases(List<File> dirs) {
+    private void lookup(List<File> dirs) {
         final ScanDirTask scanTask = new ScanDirTask(dirs);
         scanTask.setOnSucceeded(event -> {
             final List<File> processedDirs = scanTask.getProcessedDirectoryList();
-            crawlForReleaseData(processedDirs);
+
+            final ImportTask importTask = new ImportTask(processedDirs);
+            final Thread thread = new Thread(importTask);
+            thread.setDaemon(true);
+            thread.start();
         });
 
         final Thread scanProcessThread = new Thread(scanTask);
         scanProcessThread.setDaemon(true);
         scanProcessThread.start();
-    }
-
-    private void crawlForReleaseData(List<File> processedDirs) {
-        final ImportTask importTask = new ImportTask(processedDirs);
-
-        final Thread thread = new Thread(importTask);
-        thread.setDaemon(true);
-        thread.start();
     }
 
     private List<File> filterDirectories(List<File> files) {
@@ -130,9 +129,9 @@ public class MainController {
                 .name("The Artist")
                 .sortName("Artist, The")
                 .image(ImageUtils.readImage(DEFAULT_PHOTO_PATH))
-                .beginDate("1980")
-                .endDate("1985")
-                .isGroup(true)
+                .beginDate(LocalDate.of(1980, 1, 1))
+                .endDate(LocalDate.of(1995, 1, 1))
+                .type(ArtistType.GROUP)
                 .build();
     }
 

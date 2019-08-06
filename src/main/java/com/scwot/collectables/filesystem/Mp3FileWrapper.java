@@ -87,7 +87,7 @@ public class Mp3FileWrapper {
         discNumber = discNumberValue(audioFile);
         genres = listFromTag(audioFile, FieldKey.GENRE);
         artists = Arrays.asList(splitString(fromCustomTag(audioFile, ARTISTS_TAG_NAME, EMPTY)));
-        hasArtwork = artworkValue(audioFile);
+        hasArtwork = hasArtwork(audioFile);
         catNums = Arrays.asList(splitString(fromCustomTag(audioFile, CATALOGNUMBER_TAG_NAME, EMPTY)));
     }
 
@@ -181,12 +181,8 @@ public class Mp3FileWrapper {
         return splitString;
     }
 
-    private static boolean artworkValue(MP3File audioFile) {
-        boolean value = false;
-        if (!audioFile.getTag().getArtworkList().isEmpty()) {
-            value = true;
-        }
-        return value;
+    private static boolean hasArtwork(MP3File audioFile) {
+        return !audioFile.getTag().getArtworkList().isEmpty();
     }
 
     public int getTrack() {

@@ -3,16 +3,20 @@ package com.scwot.collectables.filesystem;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.scwot.collectables.adapter.ReleaseAdapter;
+import com.scwot.collectables.persistence.model.Artist;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Stream;
 
@@ -45,6 +49,7 @@ public class ReleaseMetadata {
     private SortedSet<String> labels = Sets.newTreeSet();
     private SortedSet<String> catNums = Sets.newTreeSet();
 
+    private ReleaseAdapter releaseAdapter;
 
     public ReleaseMetadata(FileSystemWrapper properties) {
         this.properties = properties;
@@ -82,7 +87,6 @@ public class ReleaseMetadata {
         releasedYear = Collections.max(years);
         recordedYear = Collections.min(years);
 
-        System.out.println();
 
         /*label = firstTrack.getLabel() != null ? firstTrack.getLabel() : EMPTY;
         catNum = firstTrack.getCatNum() != null ? firstTrack.getCatNum() : EMPTY;
@@ -104,6 +108,18 @@ public class ReleaseMetadata {
         }*/
 
         audioList.sort(Comparator.comparingInt(Mp3FileWrapper::getTrack));
+    }
+
+    private ReleaseAdapter createReleaseAdapter() {
+        releaseAdapter = new ReleaseAdapter();
+
+        final Set<Artist> artists = new HashSet<>();
+
+
+
+
+
+        return releaseAdapter;
     }
 
 

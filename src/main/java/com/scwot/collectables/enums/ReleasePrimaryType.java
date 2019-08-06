@@ -1,10 +1,9 @@
 package com.scwot.collectables.enums;
 
-public enum ReleaseType {
+public enum ReleasePrimaryType {
     ALBUM,
     SINGLE,
     EP,
+    BROADCAST,
     OTHER,
-    COMPILATION,
-    LIVE
 }

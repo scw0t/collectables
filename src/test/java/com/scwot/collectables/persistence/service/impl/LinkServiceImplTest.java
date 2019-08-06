@@ -2,8 +2,7 @@ package com.scwot.collectables.persistence.service.impl;
 
 import com.scwot.collectables.AbstractTest;
 import com.scwot.collectables.persistence.model.Link;
-import com.scwot.collectables.enums.LinkResource;
-import com.scwot.collectables.enums.LinkType;
+import com.scwot.collectables.enums.SupportedLinkType;
 import com.scwot.collectables.persistence.service.LinkService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ public class LinkServiceImplTest extends AbstractTest {
 
     @Test
     public void save() throws Exception {
-        assertThat(linkService.save(defaultLink()).getId(), is(1L));
+        assertThat(linkService.save(defaultLink()).getLinkId(), is(1L));
     }
 
     @Test
@@ -29,7 +28,7 @@ public class LinkServiceImplTest extends AbstractTest {
         linkService.save(link);
 
         final List<Link> byIdAndType =
-                linkService.findByIdAndType(link.getEntityId(), link.getLinkType());
+                linkService.findByIdAndType(link.getLinkId(), link.getSupportedLinkType());
 
         assertThat(byIdAndType.size(), is(1));
     }
@@ -39,22 +38,20 @@ public class LinkServiceImplTest extends AbstractTest {
         final Link link = defaultLink();
         linkService.save(link);
 
-        assertThat(linkService.findByIdAndType(link.getEntityId(), link.getLinkType()).size(),
+        assertThat(linkService.findByIdAndType(link.getLinkId(), link.getSupportedLinkType()).size(),
                 is(1));
 
-        linkService.remove(link.getId(), link.getLinkType());
+        linkService.remove(link.getLinkId(), link.getSupportedLinkType());
 
-        assertThat(linkService.findByIdAndType(link.getEntityId(), link.getLinkType()).size(),
+        assertThat(linkService.findByIdAndType(link.getLinkId(), link.getSupportedLinkType()).size(),
                 is(0));
     }
 
 
     private Link defaultLink() {
         return Link.builder()
-                .entityId(1L)
                 .url("http:\\\\sample.com")
-                .linkType(LinkType.ARTIST)
-                .linkResource(LinkResource.MB)
+                .supportedLinkType(SupportedLinkType.MUSICBRAINZ)
                 .build();
     }
 

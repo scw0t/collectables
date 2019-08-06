@@ -1,6 +1,6 @@
 package com.scwot.collectables.filesystem;
 
-import org.assertj.core.util.Lists;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,8 +40,8 @@ public class ReleaseMetadataTest {
         when(audio.getGenres()).thenReturn(Lists.newArrayList(GENRE_1, GENRE_2));
         when(audio.getDiscNumber()).thenReturn(DISC_NUM);
         when(audio.getMbReleaseId()).thenReturn(MBID);
-        when(audio.getCatNum()).thenReturn(CAT_NUM);
-        when(audio.getLabel()).thenReturn(LABEL);
+        /*when(audio.getCatNum()).thenReturn(CAT_NUM);
+        when(audio.getLabel()).thenReturn(LABEL);*/
     }
 
     @Test

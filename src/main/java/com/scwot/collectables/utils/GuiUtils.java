@@ -1,8 +1,9 @@
 package com.scwot.collectables.utils;
 
-import java.io.File;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+
+import java.io.File;
 
 public class GuiUtils {
 

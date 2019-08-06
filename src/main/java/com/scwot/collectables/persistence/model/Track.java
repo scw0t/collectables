@@ -6,12 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -22,18 +23,26 @@ public class Track {
 
     @Id
     @GeneratedValue
+    @Column(name = "track_id")
     private Long trackId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Medium medium;
-
+    @Column(nullable = false)
     private String name;
 
     private Integer position;
 
     private Long length;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Artist> artistList;
+    private String path;
 
+    private LocalDateTime createdAt;
+
+    private LocalDateTime modifiedAt;
+
+    @ManyToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinColumn(name = "medium_id")
+    private Medium medium;
 }

@@ -1,20 +1,20 @@
 package com.scwot.collectables.persistence.repository;
 
+import com.scwot.collectables.enums.SupportedLinkType;
 import com.scwot.collectables.persistence.model.Link;
-import com.scwot.collectables.enums.LinkType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface LinkRepository extends JpaRepository<Link, Long> {
 
-    void deleteByIdAndLinkType(@Param("id") final Long id,
-                               @Param("linkType") final LinkType linkType);
+    void deleteByLinkIdAndSupportedLinkType(@Param("link_id") final Long linkId,
+                               @Param("type") final SupportedLinkType type);
 
-    List<Link> findByIdAndLinkType(@Param("id") final Long id,
-                                   @Param("linkType") final LinkType linkType);
+    Set<Link> findByLinkIdAndSupportedLinkType(@Param("link_id") final Long linkId,
+                                  @Param("type") final SupportedLinkType type);
 
 }

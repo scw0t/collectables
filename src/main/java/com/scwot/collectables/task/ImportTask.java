@@ -31,8 +31,7 @@ public class ImportTask extends Task<Collection<Release>> {
 
         final DefaultImportStrategy strategy = new DefaultImportStrategy();
         strategy.execute(dir);
+
         System.out.println();
-
-
     }
 }

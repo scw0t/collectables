@@ -1,54 +1,33 @@
 package com.scwot.collectables.persistence.service.impl;
 
-import com.google.common.collect.Lists;
 import com.scwot.collectables.persistence.model.Artist;
-import com.scwot.collectables.persistence.model.Release;
 import com.scwot.collectables.persistence.model.ReleaseGroup;
 import com.scwot.collectables.persistence.repository.ReleaseGroupRepository;
-import com.scwot.collectables.persistence.repository.ReleaseRepository;
 import com.scwot.collectables.persistence.service.ReleaseGroupService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static com.google.common.base.Verify.verifyNotNull;
 
 @Service
+@Transactional
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ReleaseGroupServiceImpl implements ReleaseGroupService {
 
     private ReleaseGroupRepository releaseGroupRepository;
-    private ReleaseRepository releaseRepository;
 
     @Override
     public ReleaseGroup save(final ReleaseGroup releaseGroup) {
-        return releaseGroupRepository.saveAndFlush(verifyNotNull(releaseGroup));
-    }
-
-    @Override
-    public Release saveRelease(final Long releaseGroupId, final Release release) {
-        final ReleaseGroup releaseGroup = findById(releaseGroupId);
-        if (releaseGroup.getReleaseList() == null) {
-            releaseGroup.setReleaseList(Lists.newArrayList());
-        }
-        releaseGroup.getReleaseList().add(release);
-        final List<Release> releaseList = save(releaseGroup).getReleaseList();
-        return releaseList.get(releaseList.size() - 1);
-    }
-
-    @Override
-    public void deleteRelease(final Long releaseGroupId, final Release release) {
-        final ReleaseGroup releaseGroup = findById(releaseGroupId);
-        if (releaseGroup.getReleaseList() != null) {
-            releaseGroup.getReleaseList().remove(release);
-        }
+        return releaseGroupRepository.save(verifyNotNull(releaseGroup));
     }
 
     @Override
     public ReleaseGroup findById(Long releaseGroupId) {
-        return releaseGroupRepository.findOne(verifyNotNull(releaseGroupId));
+        return releaseGroupRepository.getOne(verifyNotNull(releaseGroupId));
     }
 
     @Override
@@ -58,6 +37,6 @@ public class ReleaseGroupServiceImpl implements ReleaseGroupService {
 
     @Override
     public void delete(Long id) {
-        releaseGroupRepository.delete(id);
+        releaseGroupRepository.deleteById(id);
     }
 }

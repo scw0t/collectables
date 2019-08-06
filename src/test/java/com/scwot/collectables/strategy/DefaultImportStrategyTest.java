@@ -17,6 +17,6 @@ public class DefaultImportStrategyTest extends AbstractTest {
     @Test
     public void execute() {
         importStrategy.execute(TEST_DIR);
-        System.out.println(importStrategy.getArtist());
+        //System.out.println(importStrategy.getArtist());
     }
 }

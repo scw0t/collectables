@@ -6,10 +6,12 @@ import com.scwot.collectables.persistence.service.GenreService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.google.common.base.Verify.verifyNotNull;
 
 @Service
+@Transactional
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class GenreServiceImpl implements GenreService {
 
@@ -17,7 +19,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Genre find(Long genreId) {
-        return genreRepository.findOne(verifyNotNull(genreId));
+        return genreRepository.getOne(verifyNotNull(genreId));
     }
 
     @Override
@@ -27,6 +29,6 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public void delete(Long genreId) {
-        genreRepository.delete(verifyNotNull(genreId));
+        genreRepository.deleteById(verifyNotNull(genreId));
     }
 }

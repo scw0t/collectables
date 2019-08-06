@@ -1,7 +1,7 @@
 package com.scwot.collectables.persistence.service.impl;
 
 import com.google.common.base.VerifyException;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.scwot.collectables.AbstractTest;
 import com.scwot.collectables.persistence.model.Artist;
 import org.junit.Test;
@@ -13,10 +13,10 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
@@ -75,28 +75,24 @@ public class ArtistServiceImplTest extends AbstractTest {
         final Long member2Id = artistService.save(member2).getArtistId();
 
         group = artistService.findById(artistId);
-        group.setMembers(Lists.newArrayList(member1, member2));
+        group.setMembers(Sets.newHashSet(member1, member2));
         artistService.save(group);
 
         final Artist saved = artistService.findById(artistId);
         assertThat(saved.getMembers().size(), is(2));
 
         member1 = artistService.findById(member1Id);
-        member1.setMemberOf(Lists.newArrayList(group));
+        member1.setMemberOf(Sets.newHashSet(group));
         artistService.save(member1);
 
         member1 = artistService.findById(member1Id);
 
-        assertThat(member1, is(notNullValue()));
         assertThat(member1.getMemberOf().size(), is(1));
-        assertThat(member1.getMemberOf().get(0).getArtistId(), is(artistId));
 
         member2 = artistService.findById(member2Id);
-        member2.setMemberOf(Lists.newArrayList(group));
+        member2.setMemberOf(Sets.newHashSet(group));
         artistService.save(member2);
-        assertThat(member2, is(notNullValue()));
         assertThat(member2.getMemberOf().size(), is(1));
-        assertThat(member2.getMemberOf().get(0).getArtistId(), is(artistId));
     }
 
     @Test(expected = VerifyException.class)

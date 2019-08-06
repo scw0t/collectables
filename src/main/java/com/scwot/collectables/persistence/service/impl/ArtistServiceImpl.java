@@ -6,12 +6,14 @@ import com.scwot.collectables.persistence.service.ArtistService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static com.google.common.base.Verify.verifyNotNull;
 
 @Service
+@Transactional
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class ArtistServiceImpl implements ArtistService {
 
@@ -24,12 +26,12 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     public void delete(Long id) {
-        artistRepository.delete(verifyNotNull(id));
+        artistRepository.deleteById(verifyNotNull(id));
     }
 
     @Override
     public Artist findById(Long id) {
-        return artistRepository.findOne(verifyNotNull(id));
+        return artistRepository.getOne(verifyNotNull(id));
     }
 
     @Override

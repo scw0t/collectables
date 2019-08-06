@@ -1,20 +1,30 @@
 package com.scwot.collectables.persistence.model;
 
+import com.google.common.collect.Sets;
+import com.scwot.collectables.enums.ReleaseSecondaryType;
+import com.scwot.collectables.persistence.core.PostgreSQLEnumType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import java.time.Instant;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Builder
@@ -25,6 +35,7 @@ public class Release {
 
     @Id
     @GeneratedValue
+    @Column(name = "release_id")
     private Long releaseId;
 
     @Column(unique = true)
@@ -33,16 +44,8 @@ public class Release {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "releaseGroupId")
-    private ReleaseGroup releaseGroup;
-
-    @OneToMany(mappedBy = "release", cascade = CascadeType.ALL)
-    private List<Medium> mediumList;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "labelId")
-    private Label label;
+    @Column(nullable = false)
+    private String sortName;
 
     private String barcode;
 
@@ -54,12 +57,64 @@ public class Release {
 
     private String country;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "status")
+    private ReleaseSecondaryType status;
 
-    private String type;
+    private String quality;
 
+    private String language;
+
+    private String path;
+
+    @Lob
     private byte[] image;
 
-    private Instant dateAdded;
+    @Lob
+    private byte[] thumbImage;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime modifiedAt;
+
+    @ManyToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinColumn(name = "release_group_id")
+    private ReleaseGroup releaseGroup;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "release", cascade = CascadeType.ALL)
+    private Set<Medium> mediums = Sets.newHashSet();
+
+    @ManyToOne(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinColumn(name = "label_id")
+    private Label label;
+
+    @Builder.Default
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "link_release",
+            joinColumns = @JoinColumn(name = "release_id"),
+            inverseJoinColumns = @JoinColumn(name = "link_id"))
+    private Set<Link> links = Sets.newHashSet();
+
+    public void addLink(final Link link)
+    {
+        links.add(link);
+        link.getReleases().add(this);
+    }
+
+    public void removeLink(final Link link)
+    {
+        links.remove(link);
+        link.getReleases().remove(this);
+    }
 
 }
