@@ -6,6 +6,7 @@ import com.scwot.collectables.enums.ReleaseSecondaryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
@@ -62,8 +63,10 @@ public class ReleaseGroup {
     @Lob
     private byte[] thumbImage;
 
+    @EqualsAndHashCode.Exclude
     private LocalDateTime createdAt;
 
+    @EqualsAndHashCode.Exclude
     private LocalDateTime modifiedAt;
 
     @Builder.Default

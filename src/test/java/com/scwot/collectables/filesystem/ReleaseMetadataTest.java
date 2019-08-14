@@ -39,7 +39,7 @@ public class ReleaseMetadataTest {
         when(audio.getYear()).thenReturn(YEAR);
         when(audio.getGenres()).thenReturn(Lists.newArrayList(GENRE_1, GENRE_2));
         when(audio.getDiscNumber()).thenReturn(DISC_NUM);
-        when(audio.getMbReleaseId()).thenReturn(MBID);
+        when(audio.getReleaseMBID()).thenReturn(MBID);
         /*when(audio.getCatNum()).thenReturn(CAT_NUM);
         when(audio.getLabel()).thenReturn(LABEL);*/
     }

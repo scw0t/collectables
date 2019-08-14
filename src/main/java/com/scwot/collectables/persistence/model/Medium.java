@@ -3,6 +3,7 @@ package com.scwot.collectables.persistence.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
@@ -27,16 +28,14 @@ public class Medium {
     @GeneratedValue
     private Long mediumId;
 
-    @Column(nullable = false)
     private String name;
-
-    @Column(name = "sort_name", nullable = false)
-    private String sortName;
 
     private String format;
 
+    @EqualsAndHashCode.Exclude
     private LocalDateTime createdAt;
 
+    @EqualsAndHashCode.Exclude
     private LocalDateTime modifiedAt;
 
     @ManyToOne(cascade = {

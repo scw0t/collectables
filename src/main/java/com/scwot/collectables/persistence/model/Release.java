@@ -2,13 +2,11 @@ package com.scwot.collectables.persistence.model;
 
 import com.google.common.collect.Sets;
 import com.scwot.collectables.enums.ReleaseSecondaryType;
-import com.scwot.collectables.persistence.core.PostgreSQLEnumType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -73,8 +71,10 @@ public class Release {
     @Lob
     private byte[] thumbImage;
 
+    @EqualsAndHashCode.Exclude
     private LocalDateTime createdAt;
 
+    @EqualsAndHashCode.Exclude
     private LocalDateTime modifiedAt;
 
     @ManyToOne(cascade = {

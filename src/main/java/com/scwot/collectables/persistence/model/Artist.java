@@ -6,6 +6,7 @@ import com.scwot.collectables.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
@@ -69,8 +70,10 @@ public class Artist {
     @Type(type="org.hibernate.type.BinaryType")
     private byte[] thumbImage;
 
+    @EqualsAndHashCode.Exclude
     private LocalDateTime createdAt;
 
+    @EqualsAndHashCode.Exclude
     private LocalDateTime modifiedAt;
 
     @Builder.Default
@@ -123,6 +126,15 @@ public class Artist {
             inverseJoinColumns = @JoinColumn(name = "link_id"))
     private Set<Link> links = Sets.newHashSet();
 
+    @Builder.Default
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "artist_track_credit",
+            joinColumns = @JoinColumn(name = "artist_id"),
+            inverseJoinColumns = @JoinColumn(name = "track_id"))
+    private Set<Track> tracks = Sets.newHashSet();
 
     public void addReleaseGroup(final ReleaseGroup releaseGroup) {
         releaseGroups.add(releaseGroup);

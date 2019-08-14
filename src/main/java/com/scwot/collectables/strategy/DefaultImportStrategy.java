@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -26,25 +27,16 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
 
     private FileSystemWrapper root;
 
-
-    /*private String artist;
-    private String album;
-    private String year;
-    private String origYear;
-    private String mbReleaseId;
-    private String label;
-    private String catNumber;
-    private List<String> artists = Lists.newArrayList();*/
     private List<ReleaseMetadata> releaseMetadataList = Lists.newArrayList();
 
     private int cdCount = 0;
     private int entryCount = 0;
     private int cdNotProcessed = 0;
 
-    public void execute(File currentDir) {
+    public List<ReleaseMetadata> execute(File currentDir) {
         if (!currentDir.exists()) {
             log.warn(currentDir + " not exists!");
-            return;
+            return Collections.emptyList();
         }
 
         root = new FileSystemWrapper(currentDir);
@@ -56,15 +48,7 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
             log.debug(prop.toString());
         }
 
-        /*if (!releaseMetadataList.isEmpty() && releaseMetadataList.get(0) != null) {
-            artist = releaseMetadataList.get(0).getArtist();
-            album = releaseMetadataList.get(0).getAlbum();
-            year = releaseMetadataList.get(0).getReleasedYear();
-            origYear = releaseMetadataList.get(0).getRecordedYear();
-            mbReleaseId = releaseMetadataList.get(0).getMbReleaseId();
-            label = releaseMetadataList.get(0).getLabel();
-            catNumber = releaseMetadataList.get(0).getCatNum();
-        }*/
+        return releaseMetadataList;
     }
 
     private void walk(File parent) {

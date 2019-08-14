@@ -80,7 +80,7 @@ public class Mp3FileWrapperTest {
 
         assertEquals(ALBUM_TITLE, testWrapper.getAlbumTitle());
         assertEquals(ARTIST_TITLE, testWrapper.getArtistTitle());
-        assertEquals(MUSICBRAINZ_RELEASEID, testWrapper.getMbReleaseId());
+        assertEquals(MUSICBRAINZ_RELEASEID, testWrapper.getReleaseMBID());
         //assertEquals(RECORD_LABEL, testWrapper.getLabel());
         assertEquals(TITLE, testWrapper.getTrackTitle());
         assertEquals(TRACK, testWrapper.getTrackNumber());
@@ -131,11 +131,11 @@ public class Mp3FileWrapperTest {
     public void readWithNullOrEmptyMbReleaseId() {
         when(tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID)).thenReturn(null);
         testWrapper.read(new File(EMPTY));
-        assertEquals(EMPTY, testWrapper.getMbReleaseId());
+        assertEquals(EMPTY, testWrapper.getReleaseMBID());
 
         when(tag.getFirst(FieldKey.MUSICBRAINZ_RELEASEID)).thenReturn(EMPTY);
         testWrapper.read(new File(EMPTY));
-        assertEquals(EMPTY, testWrapper.getMbReleaseId());
+        assertEquals(EMPTY, testWrapper.getReleaseMBID());
     }
 
     @Test

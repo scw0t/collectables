@@ -1,15 +1,19 @@
 package com.scwot.collectables.controller;
 
-import com.scwot.collectables.strategy.DefaultImportStrategy;
-import org.springframework.stereotype.Component;
+import com.scwot.collectables.filesystem.ReleaseMetadata;
+import com.scwot.collectables.persistence.model.Artist;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 public class DataBaseController {
 
 
+    public void save(final ReleaseMetadata rm) {
 
 
-    public void save(final DefaultImportStrategy entry) {
 
+
+
+        final String albumArtist = rm.getAlbumArtist();
     }
 }

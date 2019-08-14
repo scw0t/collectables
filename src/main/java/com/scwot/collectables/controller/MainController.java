@@ -2,6 +2,7 @@ package com.scwot.collectables.controller;
 
 import com.google.common.collect.Lists;
 import com.scwot.collectables.enums.ArtistType;
+import com.scwot.collectables.filesystem.ReleaseMetadata;
 import com.scwot.collectables.persistence.model.Artist;
 import com.scwot.collectables.persistence.service.ArtistService;
 import com.scwot.collectables.task.ImportTask;
@@ -37,6 +38,9 @@ public class MainController {
 
     @Autowired
     private ArtistService artistService;
+
+    @Autowired
+    private DataBaseController dataBaseController;
 
     @FXML
     public void handleOpenButtonAction() {
@@ -92,19 +96,29 @@ public class MainController {
                 event.setDropCompleted(true);
 
                 if (event.isDropCompleted()) {
-                    lookup(dirs);
+                    final List<ReleaseMetadata> releaseMetadata = lookup(dirs);
+                    save(releaseMetadata);
                 }
                 event.consume();
             }
         });
     }
 
-    private void lookup(List<File> dirs) {
+    private void save(List<ReleaseMetadata> releaseMetadata) {
+        releaseMetadata.forEach(rm -> dataBaseController.save(rm));
+    }
+
+    private List<ReleaseMetadata> lookup(List<File> dirs) {
+        final List<ReleaseMetadata> releases = Lists.newArrayList();
         final ScanDirTask scanTask = new ScanDirTask(dirs);
         scanTask.setOnSucceeded(event -> {
             final List<File> processedDirs = scanTask.getProcessedDirectoryList();
 
             final ImportTask importTask = new ImportTask(processedDirs);
+            importTask.setOnSucceeded(event1 -> {
+                releases.addAll(importTask.getValue());
+            });
+
             final Thread thread = new Thread(importTask);
             thread.setDaemon(true);
             thread.start();
@@ -113,6 +127,8 @@ public class MainController {
         final Thread scanProcessThread = new Thread(scanTask);
         scanProcessThread.setDaemon(true);
         scanProcessThread.start();
+
+        return releases;
     }
 
     private List<File> filterDirectories(List<File> files) {

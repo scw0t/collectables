@@ -33,7 +33,7 @@ public class ReleaseAdapter {
         for (Mp3FileWrapper audio : metadata.getAudioList()) {
             artists.add(Artist.builder()
                     .name(audio.getArtistTitle())
-                    .mbid(audio.getMbArtistId())
+                    .mbid(audio.getArtistMBID())
                     .build());
 
             tracks.add(Track.builder()
