@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
@@ -46,15 +47,13 @@ public class MainController {
     public void handleOpenButtonAction() {
         final Stage stage = (Stage) mainBox.getScene().getWindow();
         final File selectedDir = GuiUtils.showDirectoryChooser(stage);
-        if (selectedDir.exists()) {
+        if (selectedDir != null && selectedDir.exists()) {
             final List<File> dirs = filterDirectories(Lists.newArrayList(selectedDir));
 
             if (isNotEmpty(dirs)) {
                 lookup(dirs);
             }
         }
-
-        System.out.println(selectedDir.getAbsolutePath());
     }
 
     @FXML
@@ -92,14 +91,16 @@ public class MainController {
         mainBox.setOnDragDropped((DragEvent event) -> {
             final Dragboard db = event.getDragboard();
             if (db.hasFiles()) {
+                List<ReleaseMetadata> releaseMetadata = new ArrayList<>();
                 final List<File> dirs = filterDirectories(db.getFiles());
                 event.setDropCompleted(true);
 
                 if (event.isDropCompleted()) {
-                    final List<ReleaseMetadata> releaseMetadata = lookup(dirs);
-                    save(releaseMetadata);
+                    releaseMetadata = lookup(dirs);
                 }
                 event.consume();
+
+                save(releaseMetadata);
             }
         });
     }

@@ -5,13 +5,14 @@ import com.scwot.collectables.strategy.DefaultImportStrategy;
 import javafx.concurrent.Task;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class ImportTask extends Task<Collection<ReleaseMetadata>> {
 
     private List<File> processedDirectoryList;
-    private Collection<ReleaseMetadata> releaseMetadataCollection;
+    private Collection<ReleaseMetadata> releaseMetadataCollection = new ArrayList<>();
 
     public ImportTask(List<File> processedDirectoryList) {
         this.processedDirectoryList = processedDirectoryList;
@@ -30,5 +31,6 @@ public class ImportTask extends Task<Collection<ReleaseMetadata>> {
     private void addItem(File dir) {
         final DefaultImportStrategy strategy = new DefaultImportStrategy();
         releaseMetadataCollection.addAll(strategy.execute(dir));
+        System.out.println();
     }
 }

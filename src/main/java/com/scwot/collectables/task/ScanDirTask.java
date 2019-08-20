@@ -26,7 +26,8 @@ public class ScanDirTask extends Task<List<File>> {
         Platform.runLater(() -> inputDirectoryList.stream()
                 .filter(ScanDirTask::exists)
                 .forEach(this::removeUnwantedDirs));
-        return getProcessedDirectoryList();
+        final List<File> processedDirectoryList = getProcessedDirectoryList();
+        return processedDirectoryList;
     }
 
     private void removeUnwantedDirs(File dir) {
@@ -42,13 +43,17 @@ public class ScanDirTask extends Task<List<File>> {
         helper.countFileTypes(dir);
 
         if (helper.doesNotContainRelease(dir)) {
-            IntStream.range(0, processedDirectoryList.size())
-                    .filter(i -> processedDirectoryList.get(i).compareTo(dir) == 0)
+            IntStream.range(0, processedDirectoryList.size() - 1)
+                    .filter(i -> {
+                        final File file = processedDirectoryList.get(i);
+                        final boolean b = file.compareTo(dir) == 0;
+                        return b;
+                    })
                     .forEach(i -> processedDirectoryList.remove(i));
         }
 
         if (helper.containsJustInnerFolders(dir)) {
-            IntStream.range(0, processedDirectoryList.size())
+            IntStream.range(0, processedDirectoryList.size() - 1)
                     .filter(i -> processedDirectoryList.get(i).compareTo(dir) == 0)
                     .findFirst()
                     .ifPresent(i -> processedDirectoryList.remove(i));
@@ -60,7 +65,7 @@ public class ScanDirTask extends Task<List<File>> {
         if (helper.hasAudio()
                 && cdSubFoldersCount == 0
                 && cdParentFolderCount > 0) {
-            IntStream.range(0, processedDirectoryList.size())
+            IntStream.range(0, processedDirectoryList.size() - 1)
                     .filter(i -> processedDirectoryList.get(i).compareTo(dir) == 0)
                     .forEach(i -> processedDirectoryList.remove(i));
         }
