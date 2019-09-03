@@ -1,9 +1,6 @@
 package com.scwot.collectables.adapter;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.scwot.collectables.filesystem.Mp3FileWrapper;
-import com.scwot.collectables.filesystem.ReleaseMetadata;
+import com.scwot.collectables.file.metadata.DirectoryScopeMetadata;
 import com.scwot.collectables.persistence.model.Artist;
 import com.scwot.collectables.persistence.model.Genre;
 import com.scwot.collectables.persistence.model.Label;
@@ -15,33 +12,21 @@ import com.scwot.collectables.persistence.model.Track;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 public class ReleaseAdapter {
 
-    private ReleaseGroup releaseGroup;
     private Release release;
-    private Medium medium;
-    private Set<Artist> artists = Sets.newHashSet();
-    private List<Track> tracks = Lists.newArrayList();
-    private List<Genre> genres = Lists.newArrayList();
-    private List<Label> labels = Lists.newArrayList();
-    private List<Link> links = Lists.newArrayList();
+    private ReleaseGroup releaseGroup;
+    private List<Artist> artists;
+    private List<Medium> medium;
+    private List<Genre> genres;
+    private List<Label> labels;
+    private List<Track> trackList;
+    private List<Link> links;
 
-    public void convert(final ReleaseMetadata metadata) {
-        for (Mp3FileWrapper audio : metadata.getAudioList()) {
-            artists.add(Artist.builder()
-                    .name(audio.getArtistTitle())
-                    .mbid(audio.getArtistMBID())
-                    .build());
+    public void convert(final DirectoryScopeMetadata metadata) {
 
-            tracks.add(Track.builder()
-                    .name(audio.getTrackTitle())
-                    .position(audio.getTrack())
-                    .length(audio.getLength())
-                    .build());
-        }
 
         /*ReleaseGroup.builder()
                 .name(metadata.getAlbumTitle())

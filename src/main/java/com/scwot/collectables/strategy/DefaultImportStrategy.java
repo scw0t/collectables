@@ -1,9 +1,9 @@
 package com.scwot.collectables.strategy;
 
 import com.google.common.collect.Lists;
-import com.scwot.collectables.filesystem.FileSystemWrapper;
-import com.scwot.collectables.filesystem.Mp3FileWrapper;
-import com.scwot.collectables.filesystem.ReleaseMetadata;
+import com.scwot.collectables.file.wrapper.FileSystemWrapper;
+import com.scwot.collectables.file.wrapper.Mp3FileWrapper;
+import com.scwot.collectables.file.metadata.DirectoryScopeMetadata;
 import com.scwot.collectables.utils.DirHelper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +27,13 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
 
     private FileSystemWrapper root;
 
-    private List<ReleaseMetadata> releaseMetadataList = Lists.newArrayList();
+    private List<DirectoryScopeMetadata> directoryScopeMetadataList = Lists.newArrayList();
 
     private int cdCount = 0;
     private int entryCount = 0;
     private int cdNotProcessed = 0;
 
-    public List<ReleaseMetadata> execute(File currentDir) {
+    public List<DirectoryScopeMetadata> execute(File currentDir) {
         if (!currentDir.exists()) {
             log.warn(currentDir + " not exists!");
             return Collections.emptyList();
@@ -48,7 +48,7 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
             log.debug(prop.toString());
         }
 
-        return releaseMetadataList;
+        return directoryScopeMetadataList;
     }
 
     private void walk(File parent) {
@@ -112,13 +112,13 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
     }
 
     private void addMedium(FileSystemWrapper properties) {
-        final ReleaseMetadata releaseMetadata = new ReleaseMetadata(properties);
-        releaseMetadata.readFromFiles();
-        if (releaseMetadata.getDiscNumber() == 0) {
-            releaseMetadata.setDiscNumber(discNumber(properties));
+        properties.setIsMedium(true);
+        final DirectoryScopeMetadata directoryScopeMetadata = new DirectoryScopeMetadata();
+        directoryScopeMetadata.convert(properties);
+        if (directoryScopeMetadata.getDiscNumber() == 0) {
+            directoryScopeMetadata.setDiscNumber(discNumber(properties));
         }
-        releaseMetadata.getProperties().setIsMedium(true);
-        releaseMetadataList.add(releaseMetadata);
+        directoryScopeMetadataList.add(directoryScopeMetadata);
     }
 
     private int discNumber(FileSystemWrapper currentEntry) {

@@ -1,6 +1,9 @@
 package com.scwot.collectables.filesystem;
 
 import com.google.common.collect.Lists;
+import com.scwot.collectables.file.metadata.DirectoryScopeMetadata;
+import com.scwot.collectables.file.wrapper.FileSystemWrapper;
+import com.scwot.collectables.file.wrapper.Mp3FileWrapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,7 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-public class ReleaseMetadataTest {
+public class DirectoryScopeMetadataTest {
 
     private static final String ARTIST_TITLE = "Artist title";
     private static final String ALBUM_TITLE = "Album title";
@@ -23,7 +26,7 @@ public class ReleaseMetadataTest {
     private static final String CAT_NUM = "catN1";
     private static final String LABEL = "Label1";
     private FileSystemWrapper properties = mock(FileSystemWrapper.class);
-    private ReleaseMetadata releaseMetadata = spy(new ReleaseMetadata(properties));
+    private DirectoryScopeMetadata directoryScopeMetadata = spy(new DirectoryScopeMetadata());
     private Mp3FileWrapper audio = mock(Mp3FileWrapper.class);
 
     private List<Mp3FileWrapper> audioList = Lists.newArrayList();

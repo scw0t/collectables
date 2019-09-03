@@ -28,12 +28,12 @@ public class LinkServiceImpl implements LinkService {
 
     @Override
     public void remove(Long id, SupportedLinkType type) {
-        linkRepository.deleteByLinkIdAndSupportedLinkType(verifyNotNull(id), type);
+        linkRepository.deleteByLinkIdAndType(verifyNotNull(id), type);
     }
 
     @Override
     public Set<Link> findByLinkIdAndType(Long id, SupportedLinkType type) {
-        return linkRepository.findByLinkIdAndSupportedLinkType(id, type);
+        return linkRepository.findByLinkIdAndType(id, type);
     }
 
     @Override

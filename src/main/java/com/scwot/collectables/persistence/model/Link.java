@@ -2,13 +2,10 @@ package com.scwot.collectables.persistence.model;
 
 import com.google.common.collect.Sets;
 import com.scwot.collectables.enums.SupportedLinkType;
-import com.scwot.collectables.persistence.core.PostgreSQLEnumType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -37,8 +34,7 @@ public class Link {
     private String url;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "status")
-    private SupportedLinkType supportedLinkType;
+    private SupportedLinkType type;
 
     @Builder.Default
     @ManyToMany(cascade = {

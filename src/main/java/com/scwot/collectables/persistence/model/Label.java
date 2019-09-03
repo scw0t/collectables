@@ -30,7 +30,7 @@ public class Label {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "label")
-    private List<Release> releaseList;
+    @OneToMany(mappedBy = "label", cascade = CascadeType.ALL)
+    private List<Catalogue> catalogueList;
 
 }

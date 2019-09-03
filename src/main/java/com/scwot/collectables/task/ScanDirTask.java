@@ -7,33 +7,32 @@ import javafx.concurrent.Task;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Optional;
 
 import static com.scwot.collectables.utils.DirHelper.MACOSX_FOLDER_NAME;
 
 public class ScanDirTask extends Task<List<File>> {
 
-    private List<File> inputDirectoryList;
-    private List<File> processedDirectoryList;
+    private List<File> inputDirs;
+    private List<File> filteredDirs;
 
-    public ScanDirTask(List<File> inputDirectoryList) {
-        this.inputDirectoryList = inputDirectoryList;
-        processedDirectoryList = FXCollections.observableArrayList(inputDirectoryList);
+    public ScanDirTask(List<File> inputDirs) {
+        this.inputDirs = inputDirs;
+        filteredDirs = FXCollections.observableArrayList(inputDirs);
     }
 
     @Override
     protected List<File> call() {
-        Platform.runLater(() -> inputDirectoryList.stream()
+        Platform.runLater(() -> inputDirs.stream()
                 .filter(ScanDirTask::exists)
                 .forEach(this::removeUnwantedDirs));
-        final List<File> processedDirectoryList = getProcessedDirectoryList();
-        return processedDirectoryList;
+        return getFilteredDirs();
     }
 
     private void removeUnwantedDirs(File dir) {
         if (dir.getName().equals(MACOSX_FOLDER_NAME)) {
 
-            processedDirectoryList.removeIf(next -> next.getAbsolutePath().contains(dir.getName()));
+            filteredDirs.removeIf(next -> next.getAbsolutePath().contains(dir.getName()));
 
             return;
         }
@@ -43,20 +42,11 @@ public class ScanDirTask extends Task<List<File>> {
         helper.countFileTypes(dir);
 
         if (helper.doesNotContainRelease(dir)) {
-            IntStream.range(0, processedDirectoryList.size() - 1)
-                    .filter(i -> {
-                        final File file = processedDirectoryList.get(i);
-                        final boolean b = file.compareTo(dir) == 0;
-                        return b;
-                    })
-                    .forEach(i -> processedDirectoryList.remove(i));
+            remove(dir);
         }
 
         if (helper.containsJustInnerFolders(dir)) {
-            IntStream.range(0, processedDirectoryList.size() - 1)
-                    .filter(i -> processedDirectoryList.get(i).compareTo(dir) == 0)
-                    .findFirst()
-                    .ifPresent(i -> processedDirectoryList.remove(i));
+            remove(dir);
         }
 
         final int cdSubFoldersCount = DirHelper.getCdFoldersCount(dir);
@@ -65,17 +55,23 @@ public class ScanDirTask extends Task<List<File>> {
         if (helper.hasAudio()
                 && cdSubFoldersCount == 0
                 && cdParentFolderCount > 0) {
-            IntStream.range(0, processedDirectoryList.size() - 1)
-                    .filter(i -> processedDirectoryList.get(i).compareTo(dir) == 0)
-                    .forEach(i -> processedDirectoryList.remove(i));
+            remove(dir);
         }
+    }
+
+    private void remove(File dir) {
+        final Optional<File> inner = filteredDirs.stream()
+                .filter(file -> file.compareTo(dir) == 0)
+                .findFirst();
+
+        filteredDirs.remove(inner.get());
     }
 
     private static boolean exists(File dir) {
         return dir != null && dir.exists();
     }
 
-    public List<File> getProcessedDirectoryList() {
-        return processedDirectoryList;
+    public List<File> getFilteredDirs() {
+        return filteredDirs;
     }
 }

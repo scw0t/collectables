@@ -1,11 +1,14 @@
-package com.scwot.collectables.filesystem;
+package com.scwot.collectables.file.metadata;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.scwot.collectables.adapter.ReleaseAdapter;
+import com.scwot.collectables.file.wrapper.FileSystemWrapper;
+import com.scwot.collectables.file.wrapper.Mp3FileWrapper;
 import com.scwot.collectables.persistence.model.Artist;
 import com.scwot.collectables.persistence.model.Medium;
+import com.scwot.collectables.persistence.model.ReleaseGroup;
 import com.scwot.collectables.persistence.model.Track;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -28,17 +31,17 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Slf4j
 @Data
-public class ReleaseMetadata {
+public class DirectoryScopeMetadata {
 
     private static final String VA_VALUE = "Various Artists";
 
-    private FileSystemWrapper properties;
     private List<Mp3FileWrapper> audioList;
     private Integer discNumber;
     private String releasedYear;
     private String recordedYear;
     private String albumArtist;
     private String albumTitle;
+    private String sortAlbumTitle;
     private String releaseMBID;
     private String releaseGroupMBID;
     private String releaseCountry;
@@ -57,11 +60,7 @@ public class ReleaseMetadata {
 
     private ReleaseAdapter releaseAdapter;
 
-    public ReleaseMetadata(FileSystemWrapper properties) {
-        this.properties = properties;
-    }
-
-    public void readFromFiles() {
+    public void convert(final FileSystemWrapper properties) {
         audioList = properties.getListOfAudios();
 
         audioList.stream()
@@ -93,6 +92,13 @@ public class ReleaseMetadata {
         releasedYear = Collections.max(years);
         recordedYear = Collections.min(years);
 
+        if (albumTitle.toLowerCase().startsWith("the")) {
+            sortAlbumTitle = albumTitle.toLowerCase().replaceFirst("^([Tt])he", "") + ", The";
+        } else {
+            sortAlbumTitle = albumTitle;
+        }
+
+
         /*label = firstTrack.getLabel() != null ? firstTrack.getLabel() : EMPTY;
         catNum = firstTrack.getCatNum() != null ? firstTrack.getCatNum() : EMPTY;
 
@@ -115,7 +121,7 @@ public class ReleaseMetadata {
         audioList.sort(Comparator.comparingInt(Mp3FileWrapper::getTrack));
     }
 
-    private Collection<ReleaseMetadata> getReleaseMetadata() {
+    public Collection<DirectoryScopeMetadata> getMetadata() {
         final List<Track> tracks = new ArrayList<>();
 
         for (Mp3FileWrapper audio : audioList) {
@@ -129,7 +135,7 @@ public class ReleaseMetadata {
             final List<String> labels = audio.getLabels();
             final List<String> genres = audio.getGenres();
             final int fileNum = audio.getFileNum();
-            final Long length = audio.getLength();
+            final Long trackLength = audio.getLength();
             final String artistMBID = audio.getArtistMBID();
             final String releaseGroupMBID = audio.getReleaseGroupMBID();
             final String releaseMBID = audio.getReleaseMBID();
@@ -143,6 +149,7 @@ public class ReleaseMetadata {
             final String releaseType = audio.getReleaseType();
             final String trackTitle = audio.getTrackTitle();
             final String year = audio.getYear();
+            final String trackPath = audio.getAudioFile().getFile().getAbsolutePath();
 
             for (String artist : artists) {
                 final Artist artistToSave = Artist.builder()
@@ -156,9 +163,9 @@ public class ReleaseMetadata {
 
             final Track track = Track.builder()
                     .artists(artistSet)
-                    .name(audio.getTrackTitle())
-                    .path(audio.getAudioFile().getFile().getAbsolutePath())
-                    .length(audio.getLength())
+                    .name(trackTitle)
+                    .path(trackPath)
+                    .length(trackLength)
                     .position(Integer.valueOf(trackNumber))
                     .createdAt(LocalDateTime.now())
                     .modifiedAt(LocalDateTime.now())
@@ -171,6 +178,19 @@ public class ReleaseMetadata {
                 .createdAt(LocalDateTime.now())
                 .modifiedAt(LocalDateTime.now())
                 .build();
+
+        /*Release.builder()
+                .mbid(releaseMBID)
+                .name(albumTitle)
+                .sortName(sortAlbumTitle)
+                .barcode()*/
+
+        final ReleaseGroup releaseGroup = ReleaseGroup.builder()
+                .mbid(releaseGroupMBID)
+                .artists(Sets.newHashSet(artistSet))
+                .name(albumTitle)
+                .build();
+
 
 
 
@@ -185,7 +205,6 @@ public class ReleaseMetadata {
 
         return null;
     }
-
 
 
     /*TODO: fix for collaboration albums / splits / etc.*/
@@ -205,7 +224,6 @@ public class ReleaseMetadata {
         }
         return element;
     }
-
 
 
 }

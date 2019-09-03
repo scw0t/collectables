@@ -1,4 +1,4 @@
-package com.scwot.collectables.filesystem;
+package com.scwot.collectables.file.wrapper;
 
 import com.google.common.collect.Lists;
 import lombok.Data;

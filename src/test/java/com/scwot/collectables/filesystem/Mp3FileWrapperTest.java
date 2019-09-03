@@ -1,5 +1,6 @@
 package com.scwot.collectables.filesystem;
 
+import com.scwot.collectables.file.wrapper.Mp3FileWrapper;
 import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;

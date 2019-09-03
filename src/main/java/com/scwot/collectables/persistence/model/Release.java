@@ -1,5 +1,6 @@
 package com.scwot.collectables.persistence.model;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.scwot.collectables.enums.ReleaseSecondaryType;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -56,7 +58,6 @@ public class Release {
     private String country;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "status")
     private ReleaseSecondaryType status;
 
     private String quality;
@@ -88,12 +89,9 @@ public class Release {
     @OneToMany(mappedBy = "release", cascade = CascadeType.ALL)
     private Set<Medium> mediums = Sets.newHashSet();
 
-    @ManyToOne(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinColumn(name = "label_id")
-    private Label label;
+    @Builder.Default
+    @OneToMany(mappedBy = "release", cascade = CascadeType.ALL)
+    private List<Medium> catalogueList = Lists.newArrayList();
 
     @Builder.Default
     @ManyToMany(cascade = {

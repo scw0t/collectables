@@ -36,7 +36,7 @@ public class ReleaseGroup {
 
     @Id
     @GeneratedValue
-    @Column(name = "release_group_id")
+    @Column
     private Long releaseGroupId;
 
     @Column(unique = true)
@@ -45,8 +45,10 @@ public class ReleaseGroup {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "sort_name", nullable = false)
+    @Column(nullable = false)
     private String sortName;
+
+    private String albumArtistTitle;
 
     private Boolean va;
 

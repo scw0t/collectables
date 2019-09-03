@@ -11,10 +11,10 @@ import java.util.Set;
 @Repository
 public interface LinkRepository extends JpaRepository<Link, Long> {
 
-    void deleteByLinkIdAndSupportedLinkType(@Param("link_id") final Long linkId,
+    void deleteByLinkIdAndType(@Param("link_id") final Long linkId,
                                @Param("type") final SupportedLinkType type);
 
-    Set<Link> findByLinkIdAndSupportedLinkType(@Param("link_id") final Long linkId,
+    Set<Link> findByLinkIdAndType(@Param("link_id") final Long linkId,
                                   @Param("type") final SupportedLinkType type);
 
 }

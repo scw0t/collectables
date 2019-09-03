@@ -1,13 +1,13 @@
 package com.scwot.collectables.persistence.service.impl;
 
 import com.scwot.collectables.AbstractTest;
-import com.scwot.collectables.persistence.model.Link;
 import com.scwot.collectables.enums.SupportedLinkType;
+import com.scwot.collectables.persistence.model.Link;
 import com.scwot.collectables.persistence.service.LinkService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,8 +27,8 @@ public class LinkServiceImplTest extends AbstractTest {
         final Link link = defaultLink();
         linkService.save(link);
 
-        final List<Link> byIdAndType =
-                linkService.findByIdAndType(link.getLinkId(), link.getSupportedLinkType());
+        final Set<Link> byIdAndType =
+                linkService.findByLinkIdAndType(link.getLinkId(), link.getType());
 
         assertThat(byIdAndType.size(), is(1));
     }
@@ -38,12 +38,12 @@ public class LinkServiceImplTest extends AbstractTest {
         final Link link = defaultLink();
         linkService.save(link);
 
-        assertThat(linkService.findByIdAndType(link.getLinkId(), link.getSupportedLinkType()).size(),
+        assertThat(linkService.findByLinkIdAndType(link.getLinkId(), link.getType()).size(),
                 is(1));
 
-        linkService.remove(link.getLinkId(), link.getSupportedLinkType());
+        linkService.remove(link.getLinkId(), link.getType());
 
-        assertThat(linkService.findByIdAndType(link.getLinkId(), link.getSupportedLinkType()).size(),
+        assertThat(linkService.findByLinkIdAndType(link.getLinkId(), link.getType()).size(),
                 is(0));
     }
 
@@ -51,7 +51,7 @@ public class LinkServiceImplTest extends AbstractTest {
     private Link defaultLink() {
         return Link.builder()
                 .url("http:\\\\sample.com")
-                .supportedLinkType(SupportedLinkType.MUSICBRAINZ)
+                .type(SupportedLinkType.MUSICBRAINZ)
                 .build();
     }
 

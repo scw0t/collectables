@@ -2,7 +2,7 @@ package com.scwot.collectables.controller;
 
 import com.google.common.collect.Lists;
 import com.scwot.collectables.enums.ArtistType;
-import com.scwot.collectables.filesystem.ReleaseMetadata;
+import com.scwot.collectables.file.metadata.ReleaseScopeMetadata;
 import com.scwot.collectables.persistence.model.Artist;
 import com.scwot.collectables.persistence.service.ArtistService;
 import com.scwot.collectables.task.ImportTask;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.scwot.collectables.utils.ImageUtils.DEFAULT_PHOTO_PATH;
@@ -91,33 +90,29 @@ public class MainController {
         mainBox.setOnDragDropped((DragEvent event) -> {
             final Dragboard db = event.getDragboard();
             if (db.hasFiles()) {
-                List<ReleaseMetadata> releaseMetadata = new ArrayList<>();
                 final List<File> dirs = filterDirectories(db.getFiles());
                 event.setDropCompleted(true);
 
                 if (event.isDropCompleted()) {
-                    releaseMetadata = lookup(dirs);
+                    lookup(dirs);
                 }
                 event.consume();
-
-                save(releaseMetadata);
             }
         });
     }
 
-    private void save(List<ReleaseMetadata> releaseMetadata) {
-        releaseMetadata.forEach(rm -> dataBaseController.save(rm));
+    private void save(List<ReleaseScopeMetadata> releaseScopeMetadata) {
+        releaseScopeMetadata.forEach(rm -> dataBaseController.save(rm));
     }
 
-    private List<ReleaseMetadata> lookup(List<File> dirs) {
-        final List<ReleaseMetadata> releases = Lists.newArrayList();
+    private void lookup(List<File> dirs) {
         final ScanDirTask scanTask = new ScanDirTask(dirs);
         scanTask.setOnSucceeded(event -> {
-            final List<File> processedDirs = scanTask.getProcessedDirectoryList();
+            final List<File> processedDirs = scanTask.getFilteredDirs();
 
             final ImportTask importTask = new ImportTask(processedDirs);
             importTask.setOnSucceeded(event1 -> {
-                releases.addAll(importTask.getValue());
+                save(importTask.getValue());
             });
 
             final Thread thread = new Thread(importTask);
@@ -128,8 +123,6 @@ public class MainController {
         final Thread scanProcessThread = new Thread(scanTask);
         scanProcessThread.setDaemon(true);
         scanProcessThread.start();
-
-        return releases;
     }
 
     private List<File> filterDirectories(List<File> files) {
