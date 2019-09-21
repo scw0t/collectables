@@ -12,6 +12,7 @@ import org.jaudiotagger.audio.mp3.MP3File;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagField;
 import org.jaudiotagger.tag.id3.ID3v24Tag;
+import org.jaudiotagger.tag.images.Artwork;
 
 import java.io.File;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ public class Mp3FileWrapper {
     public static final String CATALOGNUMBER_TAG_NAME = "CATALOGNUMBER";
     public static final String ORIGINALYEAR_TAG_NAME = "originalyear";
     public static final String ARTISTS_TAG_NAME = "Artists";
+    public static final String MEDIATYPE_TAG_NAME = "MEDIATYPE";
     public static final String RELEASE_COUNTRY = "MusicBrainz Album Release Country";
     public static final String UNKNOWN_VALUE = "[unknown]";
 
@@ -42,6 +44,7 @@ public class Mp3FileWrapper {
     private String artistTitle;
     private String albumTitle;
     private String albumArtistTitle;
+    private String albumArtistSortTitle;
     private String trackTitle;
     private String year;
     private String origYear;
@@ -62,6 +65,10 @@ public class Mp3FileWrapper {
     private int trackCount;
     private int fileNum;
     private Long length;
+    private String format;
+    private String barcode;
+
+    private byte[] image;
 
     public void read(File file) {
         audioFile = (MP3File) readAudio(file);
@@ -71,6 +78,7 @@ public class Mp3FileWrapper {
         artistTitle = fromTag(audioFile, FieldKey.ARTIST, UNKNOWN_VALUE);
         albumTitle = fromTag(audioFile, FieldKey.ALBUM, UNKNOWN_VALUE);
         albumArtistTitle = fromTag(audioFile, FieldKey.ALBUM_ARTIST, UNKNOWN_VALUE);
+        albumArtistSortTitle = fromTag(audioFile, FieldKey.ALBUM_ARTIST_SORT, UNKNOWN_VALUE);
         releaseMBID = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASEID, EMPTY);
         releaseGroupMBID = fromTag(audioFile, FieldKey.MUSICBRAINZ_RELEASE_GROUP_ID, EMPTY);
         artistMBID = fromTag(audioFile, FieldKey.MUSICBRAINZ_ARTISTID, EMPTY);
@@ -81,6 +89,7 @@ public class Mp3FileWrapper {
         labels = Arrays.asList(splitString(fromTag(audioFile, FieldKey.RECORD_LABEL, EMPTY)));
         trackTitle = fromTag(audioFile, FieldKey.TITLE, UNKNOWN_VALUE);
         trackNumber = fromTag(audioFile, FieldKey.TRACK, String.valueOf(trackCount));
+        format = fromCustomTag(audioFile, MEDIATYPE_TAG_NAME, EMPTY);
 
         year = boundedFromTag(audioFile, FieldKey.YEAR, EMPTY);
         origYear = origYearValue(audioFile, FieldKey.ORIGINAL_YEAR, EMPTY);
@@ -88,7 +97,12 @@ public class Mp3FileWrapper {
         genres = listFromTag(audioFile, FieldKey.GENRE);
         artists = Arrays.asList(splitString(fromCustomTag(audioFile, ARTISTS_TAG_NAME, EMPTY)));
         hasArtwork = hasArtwork(audioFile);
-        catNums = Arrays.asList(splitString(fromCustomTag(audioFile, CATALOGNUMBER_TAG_NAME, EMPTY)));
+        catNums = Arrays.asList(splitString(fromCustomTag(audioFile, CATALOGNUMBER_TAG_NAME, "none")));
+        barcode = fromTag(audioFile, FieldKey.BARCODE, EMPTY);
+
+        final List<Artwork> artworkList = audioFile.getTag().getArtworkList();
+        final Artwork artwork = artworkList.stream().findFirst().get();
+        image = artwork.getBinaryData();
     }
 
     protected AudioFile readAudio(File file) {

@@ -50,7 +50,7 @@ public class Mp3FileWrapperTest {
 
     @Before
     public void setUp(){
-        doReturn(mp3File).when(testWrapper).readAudio(any(File.class));
+        //doReturn(mp3File).when(testWrapper).readAudio(any(File.class));
         when(mp3File.getTag()).thenReturn(tag);
         when(mp3File.getID3v2Tag()).thenReturn(id3v2Tag);
         when(id3v2Tag.getFields(Mp3FileWrapper.CUSTOM_FIELD)).thenReturn(tagFieldList);

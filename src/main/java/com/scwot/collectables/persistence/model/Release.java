@@ -44,6 +44,7 @@ public class Release {
     @Column(nullable = false)
     private String name;
 
+    /*TODO: rename to albumArtistSort*/
     @Column(nullable = false)
     private String sortName;
 

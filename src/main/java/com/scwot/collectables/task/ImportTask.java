@@ -1,6 +1,6 @@
 package com.scwot.collectables.task;
 
-import com.scwot.collectables.file.metadata.DirectoryScopeMetadata;
+import com.scwot.collectables.file.metadata.MediumScopeMetadata;
 import com.scwot.collectables.file.metadata.ReleaseScopeMetadata;
 import com.scwot.collectables.strategy.DefaultImportStrategy;
 import javafx.concurrent.Task;
@@ -12,7 +12,7 @@ import java.util.List;
 public class ImportTask extends Task<List<ReleaseScopeMetadata>> {
 
     private List<File> filteredDirs;
-    private List<ReleaseScopeMetadata> releaseScopeMetadata = new ArrayList<>();
+    private List<ReleaseScopeMetadata> releaseScopeMetadata;
 
     public ImportTask(List<File> filteredDirs) {
         this.filteredDirs = filteredDirs;
@@ -20,6 +20,8 @@ public class ImportTask extends Task<List<ReleaseScopeMetadata>> {
 
     @Override
     protected List<ReleaseScopeMetadata> call() {
+
+        releaseScopeMetadata = new ArrayList<>();
 
         for (File dir : filteredDirs) {
             addItem(dir);
@@ -30,17 +32,9 @@ public class ImportTask extends Task<List<ReleaseScopeMetadata>> {
 
     private void addItem(File dir) {
         final DefaultImportStrategy strategy = new DefaultImportStrategy();
-        final List<DirectoryScopeMetadata> directoryScopeMetadata = strategy.execute(dir);
+        final List<MediumScopeMetadata> mediumScopeMetadata = strategy.execute(dir);
 
-
-        for (DirectoryScopeMetadata metadata : directoryScopeMetadata) {
-
-            metadata.getMetadata();
-
-            System.out.println();
-        }
-
-        final ReleaseScopeMetadata releaseScopeMetadata = new ReleaseScopeMetadata(directoryScopeMetadata);
+        final ReleaseScopeMetadata releaseScopeMetadata = new ReleaseScopeMetadata(mediumScopeMetadata);
 
 
 

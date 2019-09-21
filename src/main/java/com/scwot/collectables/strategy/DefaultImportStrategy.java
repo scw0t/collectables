@@ -1,9 +1,9 @@
 package com.scwot.collectables.strategy;
 
 import com.google.common.collect.Lists;
-import com.scwot.collectables.file.wrapper.FileSystemWrapper;
+import com.scwot.collectables.file.wrapper.DirectoryScope;
 import com.scwot.collectables.file.wrapper.Mp3FileWrapper;
-import com.scwot.collectables.file.metadata.DirectoryScopeMetadata;
+import com.scwot.collectables.file.metadata.MediumScopeMetadata;
 import com.scwot.collectables.utils.DirHelper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -25,30 +25,30 @@ import java.util.List;
 @Service
 public class DefaultImportStrategy/* implements InputStrategy*/ {
 
-    private FileSystemWrapper root;
+    private DirectoryScope root;
 
-    private List<DirectoryScopeMetadata> directoryScopeMetadataList = Lists.newArrayList();
+    private List<MediumScopeMetadata> mediumScopeMetadataList = Lists.newArrayList();
 
     private int cdCount = 0;
     private int entryCount = 0;
     private int cdNotProcessed = 0;
 
-    public List<DirectoryScopeMetadata> execute(File currentDir) {
+    public List<MediumScopeMetadata> execute(File currentDir) {
         if (!currentDir.exists()) {
             log.warn(currentDir + " not exists!");
             return Collections.emptyList();
         }
 
-        root = new FileSystemWrapper(currentDir);
+        root = new DirectoryScope(currentDir);
         walk(currentDir);
 
         log.debug(root.toString());
 
-        for (FileSystemWrapper prop : root.getChildList()) {
+        for (DirectoryScope prop : root.getChildList()) {
             log.debug(prop.toString());
         }
 
-        return directoryScopeMetadataList;
+        return mediumScopeMetadataList;
     }
 
     private void walk(File parent) {
@@ -59,7 +59,7 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir,
                                                          BasicFileAttributes attrs) {
-                    final FileSystemWrapper currentEntry = new FileSystemWrapper(dir.toFile());
+                    final DirectoryScope currentEntry = new DirectoryScope(dir.toFile());
 
                     log.debug("-----> Curr dir: " + dir.toFile().toString());
                     read(dir, currentEntry);
@@ -90,7 +90,7 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
         }
     }
 
-    private void read(Path dir, FileSystemWrapper currentEntry) {
+    private void read(Path dir, DirectoryScope currentEntry) {
         final File[] list = dir.toFile().listFiles();
         int trackCount = 0;
         if (ArrayUtils.isNotEmpty(list)) {
@@ -111,17 +111,17 @@ public class DefaultImportStrategy/* implements InputStrategy*/ {
         }
     }
 
-    private void addMedium(FileSystemWrapper properties) {
+    private void addMedium(DirectoryScope properties) {
         properties.setIsMedium(true);
-        final DirectoryScopeMetadata directoryScopeMetadata = new DirectoryScopeMetadata();
-        directoryScopeMetadata.convert(properties);
-        if (directoryScopeMetadata.getDiscNumber() == 0) {
-            directoryScopeMetadata.setDiscNumber(discNumber(properties));
+        final MediumScopeMetadata mediumScopeMetadata = new MediumScopeMetadata();
+        mediumScopeMetadata.convert(properties);
+        if (mediumScopeMetadata.getDiscNumber() == 0) {
+            mediumScopeMetadata.setDiscNumber(discNumber(properties));
         }
-        directoryScopeMetadataList.add(directoryScopeMetadata);
+        mediumScopeMetadataList.add(mediumScopeMetadata);
     }
 
-    private int discNumber(FileSystemWrapper currentEntry) {
+    private int discNumber(DirectoryScope currentEntry) {
         int cdN = 0;
         if (cdCount > 0 && currentEntry.hasAudio()) {
             cdN = cdCount - --cdNotProcessed;

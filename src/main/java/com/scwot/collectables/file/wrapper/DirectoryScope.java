@@ -9,9 +9,9 @@ import java.util.List;
 import static java.lang.Boolean.FALSE;
 
 @Data
-public class FileSystemWrapper {
+public class DirectoryScope {
 
-    private List<FileSystemWrapper> childList = Lists.newArrayList();
+    private List<DirectoryScope> childList = Lists.newArrayList();
 
     private List<Mp3FileWrapper> listOfAudios = Lists.newArrayList();
     private List<File> listOfImages = Lists.newArrayList();
@@ -24,12 +24,15 @@ public class FileSystemWrapper {
     private Boolean multiArtistRelease = FALSE;
     private Boolean isMedium = FALSE;
 
-    public FileSystemWrapper(File inputDir) {
+    public DirectoryScope(File inputDir) {
         dirName = inputDir.getName();
         currentDir = inputDir;
     }
 
-    public void addChild(FileSystemWrapper child) {
+    public DirectoryScope() {
+    }
+
+    public void addChild(DirectoryScope child) {
         childList.add(child);
     }
 
